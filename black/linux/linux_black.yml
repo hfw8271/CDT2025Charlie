@@ -1,0 +1,22 @@
+---
+
+- name: rhel idm
+  hosts: all
+  become: yes
+  roles:
+    - rhelidm
+  tags:
+    - setup
+    - never
+
+- name: nginx
+  hosts: all
+  become: yes
+  roles:
+    - nginx
+  tags:
+    - setup
+    - never
+
+
+  
