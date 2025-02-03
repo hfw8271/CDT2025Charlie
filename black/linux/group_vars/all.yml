@@ -1,1 +1,22 @@
 ---
+#users vars
+users:
+  mr_dna: blueprintOfLife54!
+  dennis_nedry: niceDinosaur23!
+  ian_malcolm: lifeUhFindsAWay94!
+  alan_grant: itsADinosaur68!
+  john_hammon: welcomeToJurrasicPark00!
+  ellie_sattler: dinosaurDroppings72!
+  dr_lewis_dogson: prometheusGotGored49!
+  lex_murphy: meaASauruses30!
+  robert_muldoon: cleverGirl92!
+  tim_murphy: iReadYourBook75!
+  dr_henry_wu: monsterIsARelativeTerm39!
+  ray_arnold: checkTheVendingMachines30!
+  donald_genaro: holaJuanito28!
+  
+#freeipa vars
+realm_name: "JURPARK.COM"
+domain_name: "jurpark.com"
+admin_password: "Password123!"
+dm_password: "Password123!" 

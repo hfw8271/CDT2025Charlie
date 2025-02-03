@@ -1,0 +1,46 @@
+---
+#loops over the users dict in group_vars and makes each user with a password set in group_vars and creates a home directory for each
+- name: add users
+  ansible.builtin.user:
+    name: "{{ item.key }}" 
+    state: present 
+    password: "{{ item.value | password_hash('sha512') }}" 
+    shell: /bin/bash 
+    create_home: yes 
+  loop: "{{ users | dict2items }}" 
+  loop_control:
+    label: "{{ item.key }}"
+
+#makes a group for each user in the dict
+- name: Make groups 
+  ansible.builtin.group:
+    name: "{{ item.key }}" 
+    state: present
+  loop: "{{ users | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+#adds the specified users to the wheel or sudo group depending on the OS
+- name: Add specific users to the wheel or sudo group 
+  ansible.builtin.user:
+    name: "{{ item }}"
+    group: "{{ sudo_group }}" 
+    state: present
+  loop:
+    - "mr_dna"
+    - "john_hammon"
+    - "dennis_nedry"
+    - "dr_henry_wu"
+  when: item in ['mr_dna', 'john_hammon', 'dennis_nedry', 'dr_henry_wu']
+  vars:
+    sudo_group: "{{ 'wheel' if ansible_facts['distribution'] in ['CentOS', 'RedHat', 'Rocky'] else 'sudo' }}"
+
+# adds the blackteam ssh key to each user
+- name: Add blackteam key to users
+  ansible.posix.authorized_key:
+    user: "{{ item.key }}"
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  loop: "{{ users | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"

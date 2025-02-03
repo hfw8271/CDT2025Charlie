@@ -1,0 +1,29 @@
+---
+#sets the hostname of the idm box 
+- name: Set hostname
+  command: hostnamectl set-hostname idm.jurpark.com
+
+# makes sure that the ansible host ip is set to the FQDN in /etc/hosts they will need this to set up freeipa
+- name: Append ansible_host and hostname to /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ ansible_host }} idm.jurpark.com"
+    state: present
+    create: yes
+  when: "'{{ ansible_host }} idm.jurpark.com' not in lookup('file', '/etc/hosts')"
+
+# these repositories are required for freeipa
+- name: Ensure required repositories are enabled
+  yum:
+    name:
+      - epel-release
+      - dnf-plugins-core
+    state: present
+
+# setting up freeipa will be done by blueteam as an inject to domain join all of the linux machines
+- name: Install FreeIPA Server packages
+  yum:
+    name:
+      - freeipa-server
+      - freeipa-server-dns
+    state: present
