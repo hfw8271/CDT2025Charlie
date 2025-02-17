@@ -1,10 +1,19 @@
 ---
 # Loops over the users dict in group_vars and makes each user with a password set in group_vars and creates a home directory for each
+- name: Change passwords
+  ansible.builtin.user:
+    name: "{{ item.key }}"
+    state: present
+    password: "{{ item.value | password_hash('sha512') }}"
+    shell: /bin/bash
+  loop: "{{ packet_users | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
 
 - name: Get users with valid shells except for specific groups and packet_users
   ansible.builtin.shell: >
     awk -F: 'NR==FNR {shells[$1]; next} $NF in shells' /etc/shells /etc/passwd |
-    grep -Ev 'blueteam|blackteam|whiteteam|black_team|black-team|white-team|white_team' |
+    grep -Ev 'blackteam|whiteteam|black_team|black-team|white-team|white_team' |
     awk -F: '{{print $1}}' |
     {% for user in packet_users.keys() %} grep -v '{{ user }}' {% endfor %}
   register: unknown_users
@@ -18,15 +27,6 @@
   loop: "{{ unknown_users.stdout_lines }}"
   ignore_errors: yes
 
-- name: Change passwords
-  ansible.builtin.user:
-    name: "{{ item.key }}"
-    state: present
-    password: "{{ item.value | password_hash('sha512') }}"
-    shell: /bin/bash
-  loop: "{{ packet_users | dict2items }}"
-  loop_control:
-    label: "{{ item.key }}"
 
 - name: Ensure home directories exist
   ansible.builtin.file:
