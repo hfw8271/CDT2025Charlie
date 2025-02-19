@@ -1,1 +1,30 @@
 ---
+- name: Firewall Security
+  hosts: all
+  become: yes
+  roles:
+    - firewall
+  tags:
+    - never
+    - linux
+    - firewall
+
+- name: User Security
+  hosts: all
+  become: yes
+  roles:
+    - users
+  tags:
+    - never
+    - linux
+    - users
+
+- name: Find the flags
+  hosts: all
+  become: yes
+  roles:
+    - flags
+  tags:
+    - never
+    - linux
+    - flags

@@ -1,0 +1,80 @@
+---
+
+- name: Update all packages on Debian-based systems (Ubuntu, Kali)
+  ansible.builtin.apt:
+    update_cache: yes
+    upgrade: dist
+    autoremove: yes
+  when: ansible_os_family == "Debian"
+  ignore_errors: yes
+
+- name: Reinstall core utilities on Debian-based systems
+  ansible.builtin.apt:
+    name:
+      - coreutils
+      - bash
+      - sudo
+      - iproute2
+      - iputils-ping
+    state: present
+    force: yes
+  when: ansible_os_family == "Debian"
+  ignore_errors: yes
+
+- name: Update all packages on Arch-based systems (Arch)
+  ansible.builtin.pacman:
+    update_cache: yes
+    upgrade: yes
+  when: ansible_distribution == "Archlinux"
+  ignore_errors: yes
+
+- name: Reinstall core utilities on Arch-based systems
+  ansible.builtin.pacman:
+    name:
+      - coreutils
+      - bash
+      - sudo
+      - iproute2
+      - inetutils
+    state: present
+    force: yes
+  when: ansible_distribution == "Archlinux"
+  ignore_errors: yes
+
+- name: Update all packages on RedHat-based systems (Fedora, Rocky)
+  ansible.builtin.yum:
+    name: '*'
+    state: latest
+  when: ansible_os_family == "RedHat"
+  ignore_errors: yes
+
+- name: Reinstall core utilities on RedHat-based systems
+  ansible.builtin.yum:
+    name:
+      - coreutils
+      - bash
+      - sudo
+      - iproute
+      - iputils
+    state: latest
+  when: ansible_os_family ==  "RedHat"
+  ignore_errors: yes
+
+- name: Install Common Packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "vim"
+    - "curl"
+    - "iptables"
+    - "snoopy"
+    - "lynis"
+    - "iptables-persistent"
+  ignore_errors: yes
+
+- name: Set PATH in /etc/environment
+  lineinfile:
+    path: /etc/environment
+    line: 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"'
+    create: yes
