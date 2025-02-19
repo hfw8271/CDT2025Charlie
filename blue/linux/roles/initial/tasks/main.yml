@@ -60,19 +60,6 @@
   when: ansible_os_family ==  "RedHat"
   ignore_errors: yes
 
-- name: Install Common Packages
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - "vim"
-    - "curl"
-    - "iptables"
-    - "snoopy"
-    - "lynis"
-    - "iptables-persistent"
-  ignore_errors: yes
-
 - name: Set PATH in /etc/environment
   lineinfile:
     path: /etc/environment
