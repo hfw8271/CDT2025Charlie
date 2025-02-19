@@ -31,19 +31,6 @@
 
 
 - name: Remove grep on Debian-based systems (Ubuntu, Kali)
-  ansible.builtin.apt:
+  ansible.builtin.package:
     name: grep
     state: absent
-  when: ansible_os_family == "Debian"
-
-- name: Remove grep on Arch-based systems (Arch)
-  ansible.builtin.pacman:
-    name: grep
-    state: absent
-  when: ansible_distribution == "Archlinux"
-
-- name: Remove grep on RedHat-based systems (Fedora, Rocky)
-  ansible.builtin.dnf:
-    name: grep
-    state: absent
-  when: ansible_os_family == "RedHat"
