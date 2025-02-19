@@ -1,0 +1,36 @@
+---
+- name: find flags 5pt
+  ansible.builtin.shell: >
+    grep -ri --exclude-dir=proc --exclude-dir=sys CTF_5PT / 2>/dev/null | grep -v '^Binary file ' | awk '{print $NF}' | sort | uniq
+  register: result_5pt
+
+- name: set permissions for 5pt flags
+  ansible.builtin.shell: |
+    for file in {{ result_5pt.stdout_lines }}; do
+      chmod 000 "$file"
+    done
+  when: result_5pt.stdout_lines is defined and result_5pt.stdout_lines | length > 0
+
+- name: find flags 3pt
+  ansible.builtin.shell: >
+    grep -ri --exclude-dir=proc --exclude-dir=sys CTF_3PT / 2>/dev/null | grep -v '^Binary file ' | awk '{print $NF}' | sort | uniq
+  register: result_3pt
+
+- name: set permissions for 3pt flags
+  ansible.builtin.shell: |
+    for file in {{ result_3pt.stdout_lines }}; do
+      chmod 000 "$file"
+    done
+  when: result_3pt.stdout_lines is defined and result_3pt.stdout_lines | length > 0
+
+- name: find flags 1pt
+  ansible.builtin.shell: >
+    grep -ri --exclude-dir=proc --exclude-dir=sys CTF_1PT / 2>/dev/null | grep -v '^Binary file ' | awk '{print $NF}' | sort | uniq
+  register: result_1pt
+
+- name: set permissions for 1pt flags
+  ansible.builtin.shell: |
+    for file in {{ result_1pt.stdout_lines }}; do
+      chmod 000 "$file"
+    done
+  when: result_1pt.stdout_lines is defined and result_1pt.stdout_lines | length > 0

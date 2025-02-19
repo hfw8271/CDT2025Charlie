@@ -13,7 +13,7 @@
 - name: Get users with valid shells except for specific groups and packet_users
   ansible.builtin.shell: >
     awk -F: 'NR==FNR {shells[$1]; next} $NF in shells' /etc/shells /etc/passwd |
-    grep -Ev 'blackteam|whiteteam|black_team|black-team|white-team|white_team' |
+    grep -Ev 'ansible|ansible_user' |
     awk -F: '{{print $1}}' |
     {% for user in packet_users.keys() %} grep -v '{{ user }}' {% endfor %}
   register: unknown_users
@@ -26,7 +26,6 @@
     password_lock: yes
   loop: "{{ unknown_users.stdout_lines }}"
   ignore_errors: yes
-
 
 - name: Ensure home directories exist
   ansible.builtin.file:
