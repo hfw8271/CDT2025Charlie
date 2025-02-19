@@ -54,7 +54,7 @@
 
 - name: Replace authorized keys with our ssh key for all users
   ansible.builtin.copy:
-    src: /opt/key.pub
+    src: ~/.ssh/key.pub
     dest: "/home/{{ item.key }}/.ssh/authorized_keys"
     owner: "{{ item.key }}"
     group: "{{ item.key }}"
