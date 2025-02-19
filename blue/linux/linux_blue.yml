@@ -1,4 +1,14 @@
 ---
+- name: User Security
+  hosts: all
+  become: yes
+  roles:
+    - initial
+  tags:
+    - never
+    - linux
+    - initial
+
 - name: Firewall Security
   hosts: all
   become: yes
