@@ -16,3 +16,15 @@
     grep -ri --exclude-dir=proc --exclude-dir=sys CTF_1PT / 2>/dev/null | grep -v '^Binary file ' | awk '{print $NF}' | sort | uniq
   register: result_1pt
   ignore_errors: yes
+
+- name: print flags 5pt
+  ansible.builtin.debug:
+    var: result_5pt.stdout_lines
+
+- name: print flags 3pt
+  ansible.builtin.debug:
+    var: result_3pt.stdout_lines
+
+- name: print flags 1pt
+  ansible.builtin.debug:
+    var: result_1pt.stdout_lines
