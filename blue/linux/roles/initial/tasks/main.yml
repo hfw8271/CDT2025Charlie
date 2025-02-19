@@ -1,5 +1,12 @@
 ---
 
+- name: Set PATH in /etc/environment
+  lineinfile:
+    path: /etc/environment
+    line: 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"'
+    create: yes
+
+
 - name: Update all packages on Debian-based systems (Ubuntu, Kali)
   ansible.builtin.apt:
     update_cache: yes
@@ -60,8 +67,3 @@
   when: ansible_os_family ==  "RedHat"
   ignore_errors: yes
 
-- name: Set PATH in /etc/environment
-  lineinfile:
-    path: /etc/environment
-    line: 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"'
-    create: yes
