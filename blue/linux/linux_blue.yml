@@ -6,7 +6,6 @@
     - firewall
   tags:
     - never
-    - linux
     - firewall
 
 - name: User Security
