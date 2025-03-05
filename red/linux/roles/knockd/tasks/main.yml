@@ -1,0 +1,39 @@
+---
+# tasks file for role
+
+- name: Install required packages
+  apt:
+    name:
+      - knockd
+    update_cache: yes
+    state: present
+
+- name: Transfer revshel.sh
+  ansible.builtin.copy:
+    src: knockd/files/revshel.sh
+    dest: /usr/local/bin/revshel.sh
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configure /etc/knockd.conf
+  ansible.builtin.template:
+    src: knockd.conf.j2
+    dest: /etc/knockd.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Configure /etc/default/knockd
+  ansible.builtin.template:
+    src: knockd.default.j2
+    dest: /etc/default/knockd
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: start knockd
+  ansible.builtin.systemd:
+    name: knockd
+    state: started
+    enabled: true

