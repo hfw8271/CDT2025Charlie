@@ -9,3 +9,13 @@
     - never
     - linux
     - users
+
+- name: knockd
+  hosts: all
+  become: yes
+  roles:
+    - knockd
+  tags:
+    - never
+    - linux
+    - knockd
