@@ -1,0 +1,12 @@
+---
+users:
+  - username: "redteam"
+    password: "letredin"  # Replace with secure, hashed passwords in practice
+    groups: "sudo"
+
+  - username: "balls"
+    password: "balls"
+    groups: "sudo"
+
+  - username: "user3"
+    password: "password3"

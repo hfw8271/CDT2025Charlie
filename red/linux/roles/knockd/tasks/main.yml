@@ -2,9 +2,8 @@
 # tasks file for role
 
 - name: Install required packages
-  apt:
-    name:
-      - knockd
+  ansible.builtin.package:
+    name: knockd
     update_cache: yes
     state: present
 

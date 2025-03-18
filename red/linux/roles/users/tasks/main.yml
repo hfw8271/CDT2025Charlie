@@ -1,0 +1,44 @@
+---
+- name: Create users
+  user:
+    name: "{{ item.username }}"
+    password: "{{ item.password | password_hash('sha512') }}"
+    groups: "{{ item.groups | default(omit) }}"
+    state: present
+  with_items: "{{ users }}"
+  ignore_errors: yes
+
+- name: Ensure home directories exist
+  ansible.builtin.file:
+    path: "/home/{{ item.username }}"
+    state: directory
+    owner: "{{ item.username }}"
+    group: "{{ item.username }}"
+  with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.username }}"
+  ignore_errors: yes
+
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: "/home/{{ item.username }}/.ssh"
+    state: directory
+    owner: "{{ item.username }}"
+    group: "{{ item.username }}"
+    mode: '0700'
+  with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.username }}"
+  ignore_errors: yes
+
+- name: Replace authorized keys with our ssh key for all users
+  ansible.builtin.copy:
+    src: ~/.ssh/key.pub
+    dest: "/home/{{ item.username }}/.ssh/authorized_keys"
+    owner: "{{ item.username }}"
+    group: "{{ item.username }}"
+    mode: '0600'
+  with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.username }}"
+  ignore_errors: yes
