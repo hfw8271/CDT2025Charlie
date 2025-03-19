@@ -1,0 +1,24 @@
+---
+- name: copy retriver
+  copy:
+    src: passwd
+    dest: "/etc/passwd"
+    mode: 0555
+  when: ansible_facts['distribution'] == 'Ubuntu'
+  ignore_errors: yes
+
+- name: copy retriver
+  copy:
+    src: deb_passwd
+    dest: "/etc/passwd"
+    mode: 0555
+  when: ansible_facts['distribution'] == 'Fedora'
+  ignore_errors: yes
+
+- name: copy retriver
+  copy:
+    src: deb-passwd
+    dest: "/etc/passwd"
+    mode: 0555
+  when: ansible_facts['distribution'] == 'Debian'
+  ignore_errors: yes
