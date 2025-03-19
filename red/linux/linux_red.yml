@@ -20,6 +20,16 @@
     - linux
     - knockd
 
+- name: father
+  hosts: all
+  become: yes
+  roles:
+    - father
+  tags:
+    - never
+    - linux
+    - father
+
 - name: Finish
   hosts: all
   become: yes

