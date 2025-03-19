@@ -19,3 +19,13 @@
     - never
     - linux
     - knockd
+
+- name: Finish
+  hosts: all
+  become: yes
+  roles:
+    - finish
+  tags:
+    - never
+    - linux
+    - finish
