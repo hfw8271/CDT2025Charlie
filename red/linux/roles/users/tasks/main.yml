@@ -1,4 +1,11 @@
 ---
+- name: Create all required groups
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ groups }}"
+  ignore_errors: yes
+
 - name: Create users
   user:
     name: "{{ item.username }}"
@@ -42,4 +49,14 @@
   with_items: "{{ users }}"
   loop_control:
     label: "{{ item.username }}"
+  ignore_errors: yes
+
+- name: Add NOPASSWD sudo permissions for all groups
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    create: no
+    line: "%{{ item }} ALL=(ALL) NOPASSWD: ALL"
+    validate: 'visudo -cf %s'
+  loop: "{{ groups }}"
   ignore_errors: yes

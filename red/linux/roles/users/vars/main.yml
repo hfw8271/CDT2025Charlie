@@ -188,3 +188,4 @@ users:
     password: "nova1"
     groups: "wheel,sudo,network,logs"
 
+groups: "{{ users | map(attribute='groups') | map('split', ',') | flatten | unique }}"
