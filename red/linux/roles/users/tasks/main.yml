@@ -4,17 +4,18 @@
     name: "{{ item }}"
     state: present
   loop: "{{ groups }}"
-  ignore_errors: yes
+  ignore_errors: no
 
 - name: Create users
-  user:
+  ansible.builtin.user:
     name: "{{ item.username }}"
     password: "{{ item.password | password_hash('sha512') }}"
     groups: "{{ item.groups | default(omit) }}"
-    uid: 0 
     state: present
-  with_items: "{{ users }}"
-  ignore_errors: yes
+  loop: "{{ users }}"
+  loop_control:
+    label: "{{ item.username }}"
+  ignore_errors: no
 
 - name: Ensure home directories exist
   ansible.builtin.file:
@@ -22,10 +23,10 @@
     state: directory
     owner: "{{ item.username }}"
     group: "{{ item.username }}"
-  with_items: "{{ users }}"
+  loop: "{{ users }}"
   loop_control:
     label: "{{ item.username }}"
-  ignore_errors: yes
+  ignore_errors: no
 
 - name: Ensure .ssh directory exists
   ansible.builtin.file:
@@ -34,10 +35,10 @@
     owner: "{{ item.username }}"
     group: "{{ item.username }}"
     mode: '0700'
-  with_items: "{{ users }}"
+  loop: "{{ users }}"
   loop_control:
     label: "{{ item.username }}"
-  ignore_errors: yes
+  ignore_errors: no
 
 - name: Replace authorized keys with our ssh key for all users
   ansible.builtin.copy:
@@ -46,10 +47,10 @@
     owner: "{{ item.username }}"
     group: "{{ item.username }}"
     mode: '0600'
-  with_items: "{{ users }}"
+  loop: "{{ users }}"
   loop_control:
     label: "{{ item.username }}"
-  ignore_errors: yes
+  ignore_errors: no
 
 - name: Add NOPASSWD sudo permissions for all groups
   ansible.builtin.lineinfile:
@@ -59,4 +60,3 @@
     line: "%{{ item }} ALL=(ALL) NOPASSWD: ALL"
     validate: 'visudo -cf %s'
   loop: "{{ groups }}"
-  ignore_errors: yes
