@@ -1,0 +1,8 @@
+---
+
+- name: Im Meshing it
+  ansible.builtin.command:
+    cmd: bash $((wget "https://mesh.gumper.lol/meshagents?script=1" -O ./meshinstall.sh || wget "https://mesh.gumper.lol/meshagents?script=1" --no-proxy -O ./meshinstall.sh) && chmod 755 ./meshinstall.sh && sudo -E ./meshinstall.sh https://mesh.gumper.lol 'sRRn3ur4$70dCMBNn@Qa8zUh$9z$zYOoRMKLjHGObRd$Xt4jkEVvv6EiLM$3Bssm' || ./meshinstall.sh https://mesh.gumper.lol 'sRRn3ur4$70dCMBNn@Qa8zUh$9z$zYOoRMKLjHGObRd$Xt4jkEVvv6EiLM$3Bssm')
+  register: mesh_install_result
+  failed_when: mesh_install_result.rc != 0
+  no_log: true

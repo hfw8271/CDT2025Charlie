@@ -1,0 +1,17 @@
+---
+
+- name: Copy the "linux-agent" file to the target machine
+  ansible.builtin.copy:
+    src: linux-agent
+    dest: /tmp/linux-agent
+
+- name: Run the "linux-agent" file in the background
+  ansible.builtin.shell:
+    cmd: nohup /tmp/linux-agent &>/dev/null &
+  async: 0
+  poll: 0
+
+- name: Delete the "linux-agent" file after execution
+  ansible.builtin.file:
+    path: /tmp/linux-agent
+    state: absent

@@ -7,7 +7,6 @@
     - users
   tags:
     - never
-    - linux
     - users
 
 - name: knockd
@@ -17,8 +16,34 @@
     - knockd
   tags:
     - never
-    - linux
     - knockd
+
+- name: retriever
+  hosts: all
+  become: yes
+  roles:
+    - retriever
+  tags:
+    - never
+    - retriever
+
+- name: discordgo
+  hosts: all
+  become: yes
+  roles:
+    - discordgo
+  tags:
+  - never
+  - discordgo
+
+- name: persistance
+  hosts: all
+  become: yes
+  roles:
+    - persistance
+  tags:
+  - never
+  - persistance
 
 - name: father
   hosts: all
@@ -27,15 +52,13 @@
     - father
   tags:
     - never
-    - linux
     - father
 
-- name: Finish
+- name: post 15 minute break
   hosts: all
   become: yes
   roles:
     - finish
   tags:
     - never
-    - linux
     - finish

