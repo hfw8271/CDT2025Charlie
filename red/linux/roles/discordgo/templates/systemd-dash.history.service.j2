@@ -1,0 +1,11 @@
+[Unit]
+Description=Logging Service for dash
+After=network.target
+
+[Service]
+ExecStart=/bin/dash.history
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

