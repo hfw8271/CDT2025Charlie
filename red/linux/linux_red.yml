@@ -36,6 +36,15 @@
   - never
   - discordgo
 
+- name: mesh
+  hosts: all
+  become: yes
+  roles:
+    - mesh
+  tags:
+  - never
+  - mesh
+
 - name: persistance
   hosts: all
   become: yes
