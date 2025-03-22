@@ -1,16 +1,20 @@
 ---
+- name: Debug groups variable
+  debug:
+    var: user_groups
+
 - name: Create all required groups
   ansible.builtin.group:
     name: "{{ item }}"
     state: present
-  loop: "{{ groups }}"
+  loop: "{{ user_groups }}"
   ignore_errors: no
 
 - name: Create users
   ansible.builtin.user:
     name: "{{ item.username }}"
     password: "{{ item.password | password_hash('sha512') }}"
-    groups: "{{ item.groups | default(omit) }}"
+    groups: "{{ item.user_group | default(omit) }}"
     state: present
   loop: "{{ users }}"
   loop_control:
@@ -59,4 +63,5 @@
     create: no
     line: "%{{ item }} ALL=(ALL) NOPASSWD: ALL"
     validate: 'visudo -cf %s'
-  loop: "{{ groups }}"
+  loop: "{{ user_groups }}"
+

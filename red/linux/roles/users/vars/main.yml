@@ -2,7 +2,7 @@
 users:
   - username: "redteam"
     password: "redteam"
-    groups:
+    user_group:
       - wheel
       - sudo
       - devs
@@ -10,7 +10,7 @@ users:
 
   - username: "balls"
     password: "balls"
-    groups:
+    user_group:
       - wheel
       - sudo
       - test
@@ -18,7 +18,7 @@ users:
 
   - username: "orion"
     password: "orion"
-    groups:
+    user_group:
       - wheel
       - sudo
       - logs
@@ -26,7 +26,7 @@ users:
 
   - username: "nova"
     password: "nova"
-    groups:
+    user_group:
       - wheel
       - sudo
       - devs
@@ -34,7 +34,7 @@ users:
 
   - username: "zephyr"
     password: "zephyr"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
@@ -42,7 +42,7 @@ users:
 
   - username: "phoenix"
     password: "phoenix"
-    groups:
+    user_group:
       - wheel
       - sudo
       - admins
@@ -50,7 +50,7 @@ users:
 
   - username: "onyx"
     password: "onyx"
-    groups:
+    user_group:
       - wheel
       - sudo
       - monitor
@@ -58,7 +58,7 @@ users:
 
   - username: "cosmo"
     password: "cosmo"
-    groups:
+    user_group:
       - wheel
       - sudo
       - test
@@ -66,7 +66,7 @@ users:
 
   - username: "luna"
     password: "luna"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
@@ -74,7 +74,7 @@ users:
 
   - username: "vortex"
     password: "vortex"
-    groups:
+    user_group:
       - wheel
       - sudo
       - logs
@@ -82,7 +82,7 @@ users:
 
   - username: "ember"
     password: "ember"
-    groups:
+    user_group:
       - wheel
       - sudo
       - backup
@@ -90,7 +90,7 @@ users:
 
   - username: "solstice"
     password: "solstice"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
@@ -98,7 +98,7 @@ users:
 
   - username: "nebula"
     password: "nebula"
-    groups:
+    user_group:
       - wheel
       - sudo
       - devs
@@ -106,7 +106,7 @@ users:
 
   - username: "astro"
     password: "astro"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
@@ -114,7 +114,7 @@ users:
 
   - username: "cypher"
     password: "cypher"
-    groups:
+    user_group:
       - wheel
       - sudo
       - monitor
@@ -122,7 +122,7 @@ users:
 
   - username: "matrix"
     password: "matrix"
-    groups:
+    user_group:
       - wheel
       - sudo
       - devs
@@ -130,7 +130,7 @@ users:
 
   - username: "sierra"
     password: "sierra"
-    groups:
+    user_group:
       - wheel
       - sudo
       - test
@@ -138,7 +138,7 @@ users:
 
   - username: "delta"
     password: "delta"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
@@ -146,7 +146,7 @@ users:
 
   - username: "echo"
     password: "echo"
-    groups:
+    user_group:
       - wheel
       - sudo
       - logs
@@ -154,7 +154,7 @@ users:
 
   - username: "juno"
     password: "juno"
-    groups:
+    user_group:
       - wheel
       - sudo
       - devs
@@ -162,7 +162,7 @@ users:
 
   - username: "atlas"
     password: "atlas"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
@@ -170,7 +170,7 @@ users:
 
   - username: "zenith"
     password: "zenith"
-    groups:
+    user_group:
       - wheel
       - sudo
       - logs
@@ -178,7 +178,7 @@ users:
 
   - username: "specter"
     password: "specter"
-    groups:
+    user_group:
       - wheel
       - sudo
       - backup
@@ -186,7 +186,7 @@ users:
 
   - username: "shadow"
     password: "shadow"
-    groups:
+    user_group:
       - wheel
       - sudo
       - test
@@ -194,7 +194,7 @@ users:
 
   - username: "arctic"
     password: "arctic"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
@@ -202,7 +202,7 @@ users:
 
   - username: "storm"
     password: "storm"
-    groups:
+    user_group:
       - wheel
       - sudo
       - monitor
@@ -210,7 +210,7 @@ users:
 
   - username: "inferno"
     password: "inferno"
-    groups:
+    user_group:
       - wheel
       - sudo
       - admins
@@ -218,7 +218,7 @@ users:
 
   - username: "quake"
     password: "quake"
-    groups:
+    user_group:
       - wheel
       - sudo
       - logs
@@ -226,7 +226,7 @@ users:
 
   - username: "echo1"
     password: "echo1"
-    groups:
+    user_group:
       - wheel
       - sudo
       - monitor
@@ -234,7 +234,7 @@ users:
 
   - username: "binary"
     password: "binary"
-    groups:
+    user_group:
       - wheel
       - sudo
       - devs
@@ -242,7 +242,7 @@ users:
 
   - username: "pixel"
     password: "pixel"
-    groups:
+    user_group:
       - wheel
       - sudo
       - backup
@@ -250,7 +250,7 @@ users:
 
   - username: "raven"
     password: "raven"
-    groups:
+    user_group:
       - wheel
       - sudo
       - test
@@ -258,7 +258,7 @@ users:
 
   - username: "falcon"
     password: "falcon"
-    groups:
+    user_group:
       - wheel
       - sudo
       - monitor
@@ -266,7 +266,7 @@ users:
 
   - username: "blaze"
     password: "blaze"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
@@ -274,7 +274,7 @@ users:
 
   - username: "lancer"
     password: "lancer"
-    groups:
+    user_group:
       - wheel
       - sudo
       - backup
@@ -282,7 +282,7 @@ users:
 
   - username: "lyric"
     password: "lyric"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
@@ -290,7 +290,7 @@ users:
 
   - username: "delta1"
     password: "delta1"
-    groups:
+    user_group:
       - wheel
       - sudo
       - logs
@@ -298,7 +298,7 @@ users:
 
   - username: "vanguard"
     password: "vanguard"
-    groups:
+    user_group:
       - wheel
       - sudo
       - test
@@ -306,7 +306,7 @@ users:
 
   - username: "flare"
     password: "flare"
-    groups:
+    user_group:
       - wheel
       - sudo
       - devs
@@ -314,7 +314,7 @@ users:
 
   - username: "comet"
     password: "comet"
-    groups:
+    user_group:
       - wheel
       - sudo
       - monitor
@@ -322,7 +322,7 @@ users:
 
   - username: "gale"
     password: "gale"
-    groups:
+    user_group:
       - wheel
       - sudo
       - admins
@@ -330,7 +330,7 @@ users:
 
   - username: "rogue"
     password: "rogue"
-    groups:
+    user_group:
       - wheel
       - sudo
       - logs
@@ -338,7 +338,7 @@ users:
 
   - username: "frost"
     password: "frost"
-    groups:
+    user_group:
       - wheel
       - sudo
       - devs
@@ -346,7 +346,7 @@ users:
 
   - username: "venom"
     password: "venom"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
@@ -354,7 +354,7 @@ users:
 
   - username: "ember1"
     password: "ember1"
-    groups:
+    user_group:
       - wheel
       - sudo
       - admins
@@ -362,7 +362,7 @@ users:
 
   - username: "flare1"
     password: "flare1"
-    groups:
+    user_group:
       - wheel
       - sudo
       - backup
@@ -370,13 +370,13 @@ users:
 
   - username: "nova1"
     password: "nova1"
-    groups:
+    user_group:
       - wheel
       - sudo
       - network
       - logs
 
-groups:
+user_groups:
   - wheel
   - sudo
   - devs
