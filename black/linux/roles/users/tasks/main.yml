@@ -26,21 +26,27 @@
     name: "{{ item }}"
     group: "{{ sudo_group }}" 
     state: present
-  loop:
-    - "mr_dna"
-    - "john_hammon"
-    - "dennis_nedry"
-    - "dr_henry_wu"
-  when: item in ['mr_dna', 'john_hammon', 'dennis_nedry', 'dr_henry_wu']
+  loop: "{{ users | dict2items }}"
+  when: item in ['ian_malcolm', 'john_hammon', 'mr_dna', 'scoring']
   vars:
     sudo_group: "{{ 'wheel' if ansible_facts['distribution'] in ['CentOS', 'RedHat', 'Rocky'] else 'sudo' }}"
-
+  
 # adds the blackteam ssh key to each user
 - name: Add blackteam key to users
   ansible.posix.authorized_key:
-    user: "{{ item.key }}"
+    user: "scoring"
     state: present
     key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
   loop: "{{ users | dict2items }}"
   loop_control:
     label: "{{ item.key }}"
+
+- name: Add blackteam key to users 
+  ansible.posix.authorized_key:
+    name: "{{ item }}"
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  loop: "{{ users | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  when: item in ['grayteam', 'scoring']
