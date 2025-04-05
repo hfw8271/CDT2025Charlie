@@ -32,15 +32,6 @@
     sudo_group: "{{ 'wheel' if ansible_facts['distribution'] in ['CentOS', 'RedHat', 'Rocky'] else 'sudo' }}"
   
 # adds the blackteam ssh key to each user
-- name: Add blackteam key to users
-  ansible.posix.authorized_key:
-    user: "scoring"
-    state: present
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-  loop: "{{ users | dict2items }}"
-  loop_control:
-    label: "{{ item.key }}"
-
 - name: Add blackteam key to users 
   ansible.posix.authorized_key:
     name: "{{ item }}"
