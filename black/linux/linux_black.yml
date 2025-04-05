@@ -7,5 +7,55 @@
     - users
   tags:
     - never
-    - initial
+    - deploy
     - users
+
+- name: thunderbird
+  hosts: thunderbird
+  become: yes
+  roles:
+    - thunderbird
+  tags: 
+    - never
+    - deploy
+    - thunderbird
+
+- name: freeipa
+  hosts: freeipa
+  become: yes
+  roles:
+    - freeipa
+  tags: 
+    - never
+    - deploy
+    - freeipa
+
+- name: nginx
+  hosts: nginx
+  become: yes
+  roles:
+    - nginx
+  tags: 
+    - never
+    - deploy
+    - nginx
+
+- name: graylog
+  hosts: graylog
+  become: yes
+  roles:
+    - graylog
+  tags: 
+    - never
+    - deploy
+    - graylog
+
+- name: mysql
+  hosts: mysql
+  become: yes
+  roles:
+    - mysql
+  tags: 
+    - never
+    - deploy
+    - mysql
