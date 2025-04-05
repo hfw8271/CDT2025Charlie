@@ -1,0 +1,58 @@
+- name: Thunderbird
+  hosts: remote
+  become: yes
+  tasks:
+
+    - name: Ensure the .config/autostart directory exists
+      file:
+        path: "/home/{{ ansible_user }}/.config/autostart"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Update APT package index
+      apt:
+        update_cache: yes
+
+    - name: Install Thunderbird
+      apt:
+        name: thunderbird
+        state: present
+
+    - name: Create Thunderbird configuration directory for a user
+      file:
+        path: "/home/{{ ansible_user }}/.thunderbird"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Deploy Thunderbird configuration
+      copy:
+        dest: "/home/{{ ansible_user }}/.thunderbird/prefs.js"
+        content: |
+          // Jurassic Park Themed Thunderbird Configuration File
+          user_pref("mail.account.account1.server", "imap://imap.jurassicpark.com");
+          user_pref("mail.server.server1.hostname", "imap.jurassicpark.com");
+          user_pref("mail.server.server1.type", "imap");
+          user_pref("mail.server.server1.userName", "dr.grant@jurassicpark.com");
+          user_pref("mail.smtpserver.smtp1.hostname", "smtp.jurassicpark.com");
+          user_pref("mail.smtpserver.smtp1.username", "dr.grant@jurassicpark.com");
+          user_pref("mail.smtpserver.smtp1.authMethod", 1);
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+
+    - name: Ensure Thunderbird starts on login (optional)
+      copy:
+        dest: "/home/{{ ansible_user }}/.config/autostart/thunderbird.desktop"
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Thunderbird
+          Exec=thunderbird
+          X-GNOME-Autostart-enabled=true
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
