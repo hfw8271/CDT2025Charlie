@@ -21,23 +21,23 @@
     label: "{{ item.key }}"
 
 #adds the specified users to the wheel or sudo group depending on the OS
-- name: Add specific users to the wheel or sudo group 
+- name: Add specific users to the wheel or sudo group
   ansible.builtin.user:
-    name: "{{ item }}"
-    group: "{{ sudo_group }}" 
+    name: "{{ item.key }}"
+    groups: "{{ sudo_group }}"  # Use 'groups' to append the user to the group without overriding
     state: present
   loop: "{{ users | dict2items }}"
-  when: item in ['ian_malcolm', 'john_hammon', 'mr_dna', 'scoring']
+  when: item.key in ['ian_malcolm', 'john_hammon', 'mr_dna', 'scoring']
   vars:
     sudo_group: "{{ 'wheel' if ansible_facts['distribution'] in ['CentOS', 'RedHat', 'Rocky'] else 'sudo' }}"
   
 # adds the blackteam ssh key to each user
-- name: Add blackteam key to users 
+- name: Add blackteam key to users
   ansible.posix.authorized_key:
-    name: "{{ item }}"
+    user: "{{ item.key }}"  # Updated 'name' to 'user' for the correct parameter
     state: present
     key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
   loop: "{{ users | dict2items }}"
   loop_control:
     label: "{{ item.key }}"
-  when: item in ['grayteam', 'scoring']
+  when: item.key in ['grayteam', 'scoring']
