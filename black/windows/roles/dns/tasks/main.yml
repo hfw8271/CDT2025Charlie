@@ -34,9 +34,9 @@
 - name: Create Reverse Lookup Zone for 10.0.1.0/24
   community.windows.win_dns_zone:
     name: 1.0.10.in-addr.arpa
-    zone_type: Primary
-    replication_scope: Forest
-
+    type: Primary
+    dynamic_update: "None"
+    
 - name: Create Reverse Lookup Zone for 10.0.2.0/24
   community.windows.win_dns_zone:
     name: 2.0.10.in-addr.arpa
