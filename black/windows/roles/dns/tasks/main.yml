@@ -13,7 +13,7 @@
   community.windows.win_dns_zone:
     name: jurassicpark.local
     zone_type: Primary
-    replication_scope: Forest
+    dynamic_update: "None"
 
 - name: Create A record for Plesiosaurus1
   community.windows.win_dns_record:
