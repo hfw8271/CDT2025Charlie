@@ -2,9 +2,11 @@
   apt:
     update_cache: yes
 
-- name: Install Thunderbird
+- name: Install Thunderbird/dovecot
   apt:
-    name: thunderbird
+    name: 
+      - thunderbird
+      - dovecot-imapd
     state: present
 
 - name: Create Thunderbird configuration directory for a user

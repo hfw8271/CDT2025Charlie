@@ -28,6 +28,12 @@
     state: started
     enabled: yes
 
+- name: configure remote-access
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.conf
+    regex: '^bind-address'
+    line: 'bind-address = 0.0.0.0'
+
 - name: Set MySQL root password
   mysql_user:
     login_user: root
@@ -121,6 +127,7 @@
       ('Alice', 'alice@example.com'),
       ('Bob', 'bob@example.com');
     login_unix_socket: /var/run/mysqld/mysqld.sock
+
 - name: Insert Prey Data
   mysql_query:
     login_db: "Tyrannosaurus_Rex"
@@ -129,3 +136,8 @@
       (1, 'Velociraptors'),
       (2, 'Humans');
     login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Restart a service using the service module
+  service:
+    name: mysql
+    state: restarted
