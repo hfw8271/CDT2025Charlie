@@ -11,7 +11,7 @@ users:
 
 
 #mysql
-mysql_root_password: "SecureRootPass"
-mysql_user: "scoring"
-mysql_user_password: "query123"
+mysql_root_password: "blueprintOfLife54!"
+mysql_user: "mr_dna"
+mysql_user_password: "blueprintOfLife54!"
 
