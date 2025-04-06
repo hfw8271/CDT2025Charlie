@@ -1,6 +1,3 @@
-collections:
-  - community.windows
-
 - name: Install DNS Server
   win_feature:
     name: DNS

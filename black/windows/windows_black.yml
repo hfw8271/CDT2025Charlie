@@ -1,5 +1,7 @@
 - name: ad
   hosts: ad
+  collections:
+    - community.windows
   become: yes
   roles:
     - ad
@@ -10,6 +12,8 @@
 
 - name: dns
   hosts: dns
+  collections:
+    - community.windows
   become: yes
   roles:
     - dns
