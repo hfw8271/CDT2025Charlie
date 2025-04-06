@@ -2,7 +2,7 @@
   hosts: ad
   collections:
     - microsoft.ad
-    - community.windows
+    - ansible.windows
   become: yes
   roles:
     - ad
