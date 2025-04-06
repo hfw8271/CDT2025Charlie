@@ -31,7 +31,6 @@
   microsoft.ad.user:
     name: "{{ item.name }}"
     password: "{{ item.password }}"
-    user_principal_name: "{{ item.name }}@jurassicpark.local"
     state: present
     path: "OU=Users,DC=jurassicpark,DC=local"
     enabled: yes
@@ -44,7 +43,6 @@
   microsoft.ad.user:
     name: "{{ item.name }}"
     password: "{{ item.password }}"
-    user_principal_name: "{{ item.name }}@jurassicpark.local"
     state: present
     path: "OU=Users,DC=jurassicpark,DC=local"
     enabled: yes
