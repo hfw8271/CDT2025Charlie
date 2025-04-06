@@ -34,16 +34,16 @@
     group: "{{ ansible_user }}"
     mode: '0644'
 
-- name: Ensure Thunderbird starts on login (optional)
-  copy:
-    dest: "/home/{{ ansible_user }}/.config/autostart/thunderbird.desktop"
-    content: |
-      [Desktop Entry]
-      Type=Application
-      Name=Thunderbird
-      Exec=thunderbird
-      X-GNOME-Autostart-enabled=true
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: '0644'
-  ignore_errors: yes
+#- name: Ensure Thunderbird starts on login (optional)
+#  copy:
+#    dest: "/home/{{ ansible_user }}/.config/autostart/thunderbird.desktop"
+#    content: |
+#      [Desktop Entry]
+#      Type=Application
+#      Name=Thunderbird
+#      Exec=thunderbird
+#      X-GNOME-Autostart-enabled=true
+#    owner: "{{ ansible_user }}"
+#    group: "{{ ansible_user }}"
+#    mode: '0644'
+#  ignore_errors: yes
