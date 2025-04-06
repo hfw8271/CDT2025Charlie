@@ -12,7 +12,7 @@
 - name: Create Forward Lookup Zone
   community.windows.win_dns_zone:
     name: jurassicpark.local
-    zone_type: Primary
+    type: Primary
     dynamic_update: "None"
 
 - name: Create A record for Plesiosaurus1
