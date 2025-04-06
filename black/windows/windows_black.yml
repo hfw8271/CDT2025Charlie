@@ -17,7 +17,6 @@
     - ansible.windows
     - microsoft.ad
     - community.windows
-  become: yes
   roles:
     - dns
   tags: 
