@@ -3,6 +3,7 @@
   collections:
     - microsoft.ad
     - ansible.windows
+    - community.windows
   become: yes
   roles:
     - ad
@@ -16,6 +17,7 @@
   collections:
     - microsoft.ad
     - ansible.windows
+    - community.windows
   become: yes
   roles:
     - dns

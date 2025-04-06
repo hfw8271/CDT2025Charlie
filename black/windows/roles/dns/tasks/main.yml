@@ -5,7 +5,7 @@
     include_management_tools: yes
 
 - name: Create local users on Tyrannosaurus
-  win_user:
+  community.windows.win_user:
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     state: present
