@@ -1,7 +1,7 @@
 - name: ad
   hosts: ad
   collections:
-    - community.windows
+    - ansible.windows
   become: yes
   roles:
     - ad
@@ -13,7 +13,7 @@
 - name: dns
   hosts: dns
   collections:
-    - community.windows
+    - ansible.windows
   become: yes
   roles:
     - dns
