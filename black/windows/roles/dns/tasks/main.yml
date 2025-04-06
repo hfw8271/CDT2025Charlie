@@ -5,14 +5,14 @@
     include_management_tools: yes
 
 - name: Create local users on Tyrannosaurus
-  community.windows.win_user:
+  win_user:
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     state: present
   loop: "{{ jurassic_users }}"
 
 - name: Create forward lookup zone
-  win_dns_zone:
+  community.windows.win_dns_zone:
     name: jurassicpark.local
     zone_type: Primary
     replication_scope: Forest
