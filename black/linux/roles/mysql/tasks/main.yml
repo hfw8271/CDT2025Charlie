@@ -86,21 +86,9 @@
       );
     login_unix_socket: /var/run/mysqld/mysqld.sock  
 
-- name: Delete User Database if exists
-  mysql_db:
-    name: "users"
-    state: "absent"
-    login_unix_socket: /var/run/mysqld/mysqld.sock
-
-- name: Create User Database
-  mysql_db:
-    name: "users"
-    state: "present"
-    login_unix_socket: /var/run/mysqld/mysqld.sock
-
 - name: Create User Table
   mysql_query:
-    login_db: "users"
+    login_db: "Tyrannosaurus_Rex"
     query:
       CREATE TABLE IF NOT EXISTS users (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -110,7 +98,7 @@
 
 - name: Insert User Data
   mysql_query:
-    login_db: "users"
+    login_db: "Tyrannosaurus_Rex"
     query:
       INSERT INTO users (name) VALUES
       ('scoring'),
