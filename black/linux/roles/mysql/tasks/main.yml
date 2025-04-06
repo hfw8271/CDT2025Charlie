@@ -30,7 +30,7 @@
 
 - name: configure remote-access
   lineinfile:
-    path: /etc/mysql/mysql.conf.d/mysqld.conf
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
     regex: '^bind-address'
     line: 'bind-address = 0.0.0.0'
 
