@@ -1,12 +1,4 @@
 ---
-- name: Ensure the .config/autostart directory exists
-  file:
-    path: "/home/{{ ansible_user }}/.config/autostart"
-    state: directory
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: '0755'
-
 - name: Update APT package index
   apt:
     update_cache: yes
@@ -32,9 +24,9 @@
       user_pref("mail.account.account1.server", "imap://imap.jurassicpark.com");
       user_pref("mail.server.server1.hostname", "imap.jurassicpark.com");
       user_pref("mail.server.server1.type", "imap");
-      user_pref("mail.server.server1.userName", "dr.grant@jurassicpark.com");
+      user_pref("mail.server.server1.userName", "John_Hammond@jurassicpark.com");
       user_pref("mail.smtpserver.smtp1.hostname", "smtp.jurassicpark.com");
-      user_pref("mail.smtpserver.smtp1.username", "dr.grant@jurassicpark.com");
+      user_pref("mail.smtpserver.smtp1.username", "Ian.Malcom@jurassicpark.com");
       user_pref("mail.smtpserver.smtp1.authMethod", 1);
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
