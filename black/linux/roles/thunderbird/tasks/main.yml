@@ -25,8 +25,10 @@
       user_pref("mail.server.server1.hostname", "imap.jurassicpark.com");
       user_pref("mail.server.server1.type", "imap");
       user_pref("mail.server.server1.userName", "John_Hammond@jurassicpark.com");
+      user_pref("mail.server.server1.password", "JurassicPark123");
       user_pref("mail.smtpserver.smtp1.hostname", "smtp.jurassicpark.com");
       user_pref("mail.smtpserver.smtp1.username", "Ian.Malcom@jurassicpark.com");
+      user_pref("mail.smtpserver.smtp1.password", "TheFly123");
       user_pref("mail.smtpserver.smtp1.authMethod", 1);
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
