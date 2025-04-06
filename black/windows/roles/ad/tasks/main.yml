@@ -1,8 +1,13 @@
 - name: Install AD-Domain-Services
-  win_feature:
+  community.windows.win_feature:
     name: AD-Domain-Services
     state: present
     include_management_tools: yes
+  register: ad_ds_install
+
+- name: Reboot after installing AD-Domain-Services
+  community.windows.win_reboot:
+  when: ad_ds_install.changed
 
 - name: Promote Plesiosaurus to Domain Controller
   microsoft.ad.domain:
@@ -12,16 +17,16 @@
   register: promote
 
 - name: Reboot after domain promotion
-  win_reboot:
+  community.windows.win_reboot:
   when: promote.changed
 
 - name: Create local users on Plesiosaurus
-  win_user:
+  community.windows.win_user:
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     state: present
   loop: "{{ jurassic_users }}"
-  #Creates AD users
+
 - name: Create AD users on Plesiosaurus
   microsoft.ad.user:
     name: "{{ item.name }}"
