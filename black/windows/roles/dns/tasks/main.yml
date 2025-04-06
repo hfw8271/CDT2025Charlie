@@ -1,3 +1,6 @@
+collections:
+  - community.windows
+
 - name: Install DNS Server
   win_feature:
     name: DNS
@@ -10,7 +13,7 @@
     password: "{{ item.password }}"
     state: present
   loop: "{{ jurassic_users }}"
-#Configure DNS so that plesio1 or plesio2 IPs resolve to the proper IP, configured so it works for both networks.
+
 - name: Create forward lookup zone
   win_dns_zone:
     name: jurassicpark.local

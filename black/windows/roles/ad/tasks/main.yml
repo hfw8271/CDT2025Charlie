@@ -1,3 +1,6 @@
+collections:
+  - community.windows
+
 - name: Install AD-Domain-Services
   win_feature:
     name: AD-Domain-Services
