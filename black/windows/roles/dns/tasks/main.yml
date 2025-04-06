@@ -13,7 +13,6 @@
   community.windows.win_dns_zone:
     name: jurassicpark.local
     type: Primary
-    dynamic_update: "None"
 
 - name: Create A record for Plesiosaurus1
   community.windows.win_dns_record:
@@ -35,7 +34,6 @@
   community.windows.win_dns_zone:
     name: 1.0.10.in-addr.arpa
     type: Primary
-    dynamic_update: "None"
     
 - name: Create Reverse Lookup Zone for 10.0.2.0/24
   community.windows.win_dns_zone:
