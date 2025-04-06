@@ -1,3 +1,8 @@
+- name: Install ufw
+  apt:
+    name: ufw
+    state: present
+
 - name: Install MySQL Server
   apt:
     name: mysql-server
@@ -28,6 +33,32 @@
     state: started
     enabled: yes
 
+- name: Configure remote-access
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: 'bind-address = 0.0.0.0'
+  notify:
+    - Restart MySQL
+
+- name: Set Scorify allow Port steg1
+  ufw:
+    rule: allow
+    port: 3306
+    proto: tcp
+    from_ip: 192.168.1.252
+
+- name: Set Scorify allow Port steg2
+  ufw:
+    rule: allow
+    port: 3306
+    proto: tcp
+    from_ip: 192.168.2.252
+
+- name: Enable ufw
+  ufw:
+    state: enabled
+
 - name: Set MySQL root password
   mysql_user:
     login_user: root
@@ -49,11 +80,23 @@
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
 
+- name: Delete User Database if exists
+  mysql_db:
+    name: "users"
+    state: "absent"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create User Database
+  mysql_db:
+    name: "users"
+    state: "present"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
 - name: Create MySQL User
   mysql_user:
-    name: "{{ mysql_user }}"
-    password: "{{ mysql_user_password }}"
-    priv: "Tyrannosaurus_Rex.*:ALL"
+    name: "scoring"
+    password: "query123"
+    priv: "users.*:ALL"
     host: "%"
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
@@ -79,18 +122,6 @@
         FOREIGN KEY (prey_id) REFERENCES staff(id)
       );
     login_unix_socket: /var/run/mysqld/mysqld.sock  
-
-- name: Delete User Database if exists
-  mysql_db:
-    name: "users"
-    state: "absent"
-    login_unix_socket: /var/run/mysqld/mysqld.sock
-
-- name: Create User Database
-  mysql_db:
-    name: "users"
-    state: "present"
-    login_unix_socket: /var/run/mysqld/mysqld.sock
 
 - name: Create User Table
   mysql_query:
@@ -129,3 +160,8 @@
       (1, 'Velociraptors'),
       (2, 'Humans');
     login_unix_socket: /var/run/mysqld/mysqld.sock
+handlers:
+- name: Restart MySQL
+  service:
+    name: mysql
+    state: restarted
