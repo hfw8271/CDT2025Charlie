@@ -9,15 +9,15 @@
 
 - name: Create Thunderbird configuration directory for a user
   file:
-    path: "/home/{{ ansible_user }}/.thunderbird"
+    path: "/home/john_hammon/.thunderbird"
     state: directory
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "john_hammon"
+    group: "john_hammon"
     mode: '0755'
 
 - name: Deploy Thunderbird configuration
   copy:
-    dest: "/home/{{ ansible_user }}/.thunderbird/prefs.js"
+    dest: "/home/john_hammon/.thunderbird/prefs.js"
     content: |
       // Jurassic Park Themed Thunderbird Configuration File
       user_pref("mail.account.account1.server", "imap://imap.{{ email_domain }}");
@@ -28,11 +28,19 @@
       user_pref("mail.smtpserver.smtp1.username", "{{ thunderbird_username }}@{{ email_domain }}");
       user_pref("mail.smtpserver.smtp1.password", "{{ thunderbird_password }}");
       user_pref("mail.smtpserver.smtp1.authMethod", 1);
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "john_hammon"
+    group: "john_hammon"
     mode: '0644'
 
-- name: Ensure Thunderbird starts on login (optional)
+- name: Ensure autostart directory exists
+  file:
+    path: "/home/{{ ansible_user }}/.config/autostart"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Enable Thunderbird to start on login
   copy:
     dest: "/home/{{ ansible_user }}/.config/autostart/thunderbird.desktop"
     content: |
@@ -44,5 +52,5 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
-  ignore_errors: yes
+
 
