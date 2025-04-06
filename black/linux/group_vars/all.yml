@@ -14,3 +14,10 @@ users:
 #domain_name: "jurpark.com"
 #admin_password: "Password123!"
 #dm_password: "Password123!" 
+
+
+#mysql
+mysql_root_password: "SecureRootPass"
+mysql_user: "scoring"
+mysql_user_password: "query123"
+

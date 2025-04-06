@@ -1,0 +1,40 @@
+- name: install pip dependencies
+  apt:
+    name:
+      - python3
+      - python3-distutils
+      - curl
+    state: present
+
+- name: Install required pip packages
+  apt:
+    name: python3-pip
+    state: present
+    update_cache: yes
+
+- name: Install PyMySQL
+  pip:
+    name: PyMySQL
+    executable: pip3
+- name: Run query to find a user with retry
+  community.mysql.mysql_query:
+    login_db: "users"
+    query:
+      SELECT * FROM users WHERE name ='scoring';
+    login_unix_socket: "{{ mysql_socket}}"
+  register: user_query_result
+  failed_when: false
+  retries: 3
+  delay: 3
+  until: user_query_result is defined and user_query_result.query_result is defined
+
+- name: Log query result to file
+  lineinfile:
+    path: /var/log/user_query.log
+    create: yes
+    line: "{{ ansible_date_time.iso8601 }} | User found: {{ user_query_result.query_result | default('None') }}"
+    insertafter: EOF
+
+- name: Display user query result
+  debug:
+    var: user_query_result.query_result

@@ -1,0 +1,131 @@
+- name: Install MySQL Server
+  apt:
+    name: mysql-server
+    state: present
+
+- name: Install pip dependencies
+  apt:
+    name:
+      - python3
+      - python3-distutils
+      - curl
+    state: present
+
+- name: Install pip3
+  apt: 
+    name:
+      - python3-pip
+    state: present
+
+- name: Install PyMySQL using pip3
+  pip:
+    name: PyMySQL
+    executable: pip3
+
+- name: Start and Enable MySQL Service
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Set MySQL root password
+  mysql_user:
+    login_user: root
+    login_password: ''
+    user: root
+    password: "{{ mysql_root_password }}"
+    host_all: yes
+  ignore_errors: yes
+
+- name: Drop Database if exists
+  mysql_db:
+    name: "Tyrannosaurus_Rex"
+    state: absent
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create Database
+  mysql_db:
+    name: "Tyrannosaurus_Rex"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create MySQL User
+  mysql_user:
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_user_password }}"
+    priv: "Tyrannosaurus_Rex.*:ALL"
+    host: "%"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create Staff
+  mysql_query:
+    login_db: "Tyrannosaurus_Rex"
+    query: 
+      CREATE TABLE IF NOT EXISTS staff (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) NOT NULL UNIQUE
+      );
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+- name: Create Prey Table
+  mysql_query: 
+    login_db: "Tyrannosaurus_Rex"
+    query:
+      CREATE TABLE IF NOT EXISTS prey (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        prey_id INT NOT NULL,
+        dinosaur VARCHAR(100) NOT NULL,
+        FOREIGN KEY (prey_id) REFERENCES staff(id)
+      );
+    login_unix_socket: /var/run/mysqld/mysqld.sock  
+
+- name: Delete User Database if exists
+  mysql_db:
+    name: "users"
+    state: "absent"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create User Database
+  mysql_db:
+    name: "users"
+    state: "present"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create User Table
+  mysql_query:
+    login_db: "users"
+    query:
+      CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(20) NOT NULL
+      );
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Insert User Data
+  mysql_query:
+    login_db: "users"
+    query:
+      INSERT INTO users (name) VALUES
+      ('scoring'),
+      ('Ian Malcolm'),
+      ('Mr.DNA'),
+      ('Dennis Nedry')
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Insert Sample Data
+  mysql_query:
+    login_db: "Tyrannosaurus_Rex"
+    query:
+      INSERT INTO staff (name, email) VALUES
+      ('Alice', 'alice@example.com'),
+      ('Bob', 'bob@example.com');
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+- name: Insert Prey Data
+  mysql_query:
+    login_db: "Tyrannosaurus_Rex"
+    query: 
+      INSERT INTO prey (prey_id, dinosaur) VALUES
+      (1, 'Velociraptors'),
+      (2, 'Humans');
+    login_unix_socket: /var/run/mysqld/mysqld.sock
