@@ -11,15 +11,15 @@
     - deploy
     - ad
 
-- name: dns
-  hosts: dns
-  collections:
-    - microsoft.ad
-    - community.windows
-  become: yes
-  roles:
-    - dns
-  tags: 
-    - never
-    - deploy
-    - dns
+# - name: dns
+#   hosts: dns
+#   collections:
+#     - microsoft.ad
+#     - community.windows
+#   become: yes
+#   roles:
+#     - dns
+#   tags: 
+#     - never
+#     - deploy
+#     - dns
