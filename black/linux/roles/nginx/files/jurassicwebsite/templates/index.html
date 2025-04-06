@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Jurassic Park</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+    <header>
+        <h1>🦖 Welcome to Jurassic Park</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/map">Park Map</a></li>
+                <li><a href="/tickets">Tickets</a></li>
+                <li><a href="/safety">Safety Info</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="intro">
+            <h2>Experience the Past Like Never Before</h2>
+            <p>Step into a world where dinosaurs roam the Earth again. From towering T-Rexes to gentle Brachiosauruses, Jurassic Park brings prehistoric life to your fingertips.</p>
+            <button onclick="showAlert()">Plan Your Visit</button>
+        </section>
+
+        <section class="lore">
+            <h3>The Story Behind the Park</h3>
+            <p>Founded by visionary billionaire John Hammond, Jurassic Park is located on Isla Nublar, an island 120 miles west of Costa Rica. Utilizing groundbreaking genetic engineering from the labs of InGen, the park has successfully cloned dozens of dinosaur species, reviving creatures long extinct for over 65 million years.</p>
+            <p>Jurassic Park is more than a theme park — it's a scientific marvel and a testament to the power of modern science and ambition. Guests can explore the park via safari vehicles, river cruises, or sky trams for a one-of-a-kind immersive journey through prehistory.</p>
+        </section>
+
+        <section class="highlights">
+            <h3>Park Highlights</h3>
+            <ul>
+                <li>🦕 Live Dinosaur Exhibits</li>
+                <li>🌋 Volcanic Safari Tour</li>
+                <li>🍽️ Jungle Dining Experience</li>
+                <li>🚁 Helicopter Arrival Packages</li>
+                <li>🔬 Genetics Lab Tours</li>
+                <li>📸 Dinosaur Photo Safari</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Jurassic Park. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

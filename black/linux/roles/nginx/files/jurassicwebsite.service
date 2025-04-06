@@ -1,0 +1,14 @@
+# systemd service file for serving the Jurassic Park Website!
+
+[Unit]
+Description=Jurassic Website
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/jurassicwebsite/main.py
+WorkingDirectory=/opt/jurassicwebsite
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=sysinit.target

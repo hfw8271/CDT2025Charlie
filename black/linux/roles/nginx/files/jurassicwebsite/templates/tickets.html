@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Tickets & Pricing</h2>
+<p>Choose from our selection of Jurassic Park experiences:</p>
+<ul>
+    <li>🛻 Standard Safari Pass – $100</li>
+    <li>🧬 Lab Tour Add-On – $50</li>
+    <li>🚁 VIP Helicopter Arrival – $250</li>
+</ul>
+<form>
+    <label for="ticket">Select Package:</label>
+    <select id="ticket" name="ticket">
+        <option value="standard">Standard Safari Pass</option>
+        <option value="lab">Lab Tour Add-On</option>
+        <option value="vip">VIP Helicopter Arrival</option>
+    </select>
+    <br><br>
+    <button type="submit">Book Now</button>
+</form>
+{% endblock %}

@@ -1,1 +1,44 @@
 ---
+- name: Install required packages
+  ansible.builtin.package:
+    name: {{ item }}
+    state: present
+  with_items:
+    - nginx
+    - python3-flask
+
+- name: Copy over website
+  ansible.builtin.copy:
+    src: jurassicwebsite/
+    dest: /opt/jurassicwebsite/
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy over systemd service
+  ansible.builtin.copy:
+    src: jurassicwebsite.service
+    dest: /usr/lib/systemd/system/jurassicwebsite.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start website service
+  ansible.builtin.systemd_service:
+    name: jurassicwebsite.service
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Copy NGINX website file
+  ansible.builtin.copy:
+    src: jurassicpark.conf
+    dest: /etc/nginx/conf.d/jurassicpark.conf
+    owner: root
+    group: root
+    mode: '0644'
+  
+- name: Restart NGINX
+  ansible.builtin.systemd_service:
+    name: nginx.service
+    state: reloaded

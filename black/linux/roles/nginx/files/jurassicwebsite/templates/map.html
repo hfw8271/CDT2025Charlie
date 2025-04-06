@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Park Map</h2>
+<p>Explore the layout of Jurassic Park. Our park is divided into several zones for safety and maximum adventure:</p>
+<ul>
+    <li><strong>Herbivore Valley:</strong> See gentle giants like Triceratops and Brachiosaurus.</li>
+    <li><strong>Carnivore Canyon:</strong> Secure observation of Raptors and T-Rex.</li>
+    <li><strong>Visitor Center:</strong> Exhibits, gift shops, and food courts.</li>
+</ul>
+<img src="{{ url_for('static', filename='img/park_map.jpg') }}" alt="Jurassic Park Map" style="width: 100%; max-width: 700px; margin-top: 20px;">
+{% endblock %}
