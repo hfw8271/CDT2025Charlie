@@ -5,7 +5,7 @@
     include_management_tools: yes
 
 - name: Promote Plesiosaurus to Domain Controller
-  win_domain:
+  microsoft.ad.domain:
     dns_domain_name: jurassicpark.local
     domain_netbios_name: jurassicpark
     safe_mode_password: JurassicParkDSRM@2025
@@ -23,7 +23,7 @@
   loop: "{{ jurassic_users }}"
   #Creates AD users
 - name: Create AD users on Plesiosaurus
-  win_domain_user:
+  microsoft.ad.user:
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     user_principal_name: "{{ item.name }}@jurassicpark.local"
