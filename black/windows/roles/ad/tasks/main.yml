@@ -27,12 +27,26 @@
     state: present
   loop: "{{ jurassic_users }}"
 
-- name: Create AD users on Plesiosaurus
+- name: Create Domain Admin users
   microsoft.ad.user:
     name: "{{ item.name }}"
     password: "{{ item.password }}"
+    user_principal_name: "{{ item.name }}@jurassicpark.local"
     state: present
     path: "OU=Users,DC=jurassicpark,DC=local"
     enabled: yes
-    groups: "{{ 'Domain Admins' if item.admin else '' }}"
+    groups:
+      - "Domain Admins"
   loop: "{{ jurassic_users }}"
+  when: item.admin
+
+- name: Create Regular users
+  microsoft.ad.user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    user_principal_name: "{{ item.name }}@jurassicpark.local"
+    state: present
+    path: "OU=Users,DC=jurassicpark,DC=local"
+    enabled: yes
+  loop: "{{ jurassic_users }}"
+  when: not item.admin
