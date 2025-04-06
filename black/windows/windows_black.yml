@@ -1,8 +1,9 @@
 - name: ad
   hosts: ad
   collections:
-    - microsoft.ad
     - ansible.windows
+    - microsoft.ad
+    - community.windows
   roles:
     - ad
   tags: 
@@ -10,15 +11,16 @@
     - deploy
     - ad
 
-# - name: dns
-#   hosts: dns
-#   collections:
-#     - microsoft.ad
-#     - community.windows
-#   become: yes
-#   roles:
-#     - dns
-#   tags: 
-#     - never
-#     - deploy
-#     - dns
+- name: dns
+  hosts: dns
+  collections:
+    - ansible.windows
+    - microsoft.ad
+    - community.windows
+  become: yes
+  roles:
+    - dns
+  tags: 
+    - never
+    - deploy
+    - dns
