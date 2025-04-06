@@ -1,1 +1,7 @@
 ---
+jurassic_users:
+  - { name: 'john_hammond', password: 'welcomeToJurassicPark00!', admin: true }
+  - { name: 'ian_malcolm', password: 'lifeUhFindsAWay94!', admin: true }
+  - { name: 'mr_dna', password: 'blueprintOfLife54!', admin: true }
+  - { name: 'ellie_sattler', password: 'dinosaurDroppings72!', admin: false }
+  - { name: 'alan_grant', password: 'itsADinosaur68!', admin: false }

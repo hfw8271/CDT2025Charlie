@@ -1,0 +1,62 @@
+- name: Install DNS Server
+  win_feature:
+    name: DNS
+    state: present
+    include_management_tools: yes
+
+- name: Create local users on Tyrannosaurus
+  win_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    state: present
+  loop: "{{ jurassic_users }}"
+#Configure DNS so that plesio1 or plesio2 IPs resolve to the proper IP, configured so it works for both networks.
+- name: Create forward lookup zone
+  win_dns_zone:
+    name: jurassicpark.local
+    zone_type: Primary
+    replication_scope: Forest
+
+- name: Create A record for Plesiosaurus1
+  win_dns_record:
+    name: plesiosaurus1
+    type: A
+    value: 10.0.1.43
+    zone: jurassicpark.local
+    state: present
+
+- name: Create A record for Plesiosaurus2
+  win_dns_record:
+    name: plesiosaurus2
+    type: A
+    value: 10.0.2.43
+    zone: jurassicpark.local
+    state: present
+
+- name: Create reverse zone for 10.0.1.0/24
+  win_dns_zone:
+    name: 1.0.10.in-addr.arpa
+    zone_type: Primary
+    replication_scope: Forest
+
+- name: Create reverse zone for 10.0.2.0/24
+  win_dns_zone:
+    name: 2.0.10.in-addr.arpa
+    zone_type: Primary
+    replication_scope: Forest
+
+- name: PTR for Plesiosaurus1
+  win_dns_record:
+    name: 43
+    type: PTR
+    value: plesiosaurus1.jurassicpark.local
+    zone: 1.0.10.in-addr.arpa
+    state: present
+
+- name: PTR for Plesiosaurus2
+  win_dns_record:
+    name: 43
+    type: PTR
+    value: plesiosaurus2.jurassicpark.local
+    zone: 2.0.10.in-addr.arpa
+    state: present

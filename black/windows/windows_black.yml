@@ -1,10 +1,19 @@
----
-- name: ad_dns
-  hosts: ad_dns
+- name: ad
+  hosts: ad
   become: yes
   roles:
-    - ad_dns
+    - ad
   tags: 
     - never
     - deploy
-    - ad_dns
+    - ad
+
+- name: dns
+  hosts: dns
+  become: yes
+  roles:
+    - dns
+  tags: 
+    - never
+    - deploy
+    - dns
