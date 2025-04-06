@@ -9,12 +9,6 @@ users:
   ellie_sattler: dinosaurDroppings72!
   alan_grant: itsADinosaur68!
 
-#freeipa vars
-#realm_name: "JURPARK.COM"
-#domain_name: "jurpark.com"
-#admin_password: "Password123!"
-#dm_password: "Password123!" 
-
 
 #mysql
 mysql_root_password: "SecureRootPass"

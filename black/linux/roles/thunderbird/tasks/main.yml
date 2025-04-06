@@ -1,4 +1,3 @@
----
 - name: Update APT package index
   apt:
     update_cache: yes
@@ -21,29 +20,29 @@
     dest: "/home/{{ ansible_user }}/.thunderbird/prefs.js"
     content: |
       // Jurassic Park Themed Thunderbird Configuration File
-      user_pref("mail.account.account1.server", "imap://imap.jurassicpark.com");
-      user_pref("mail.server.server1.hostname", "imap.jurassicpark.com");
+      user_pref("mail.account.account1.server", "imap://imap.{{ email_domain }}");
+      user_pref("mail.server.server1.hostname", "imap.{{ email_domain }}");
       user_pref("mail.server.server1.type", "imap");
-      user_pref("mail.server.server1.userName", "John_Hammond@jurassicpark.com");
-      user_pref("mail.server.server1.password", "JurassicPark123");
-      user_pref("mail.smtpserver.smtp1.hostname", "smtp.jurassicpark.com");
-      user_pref("mail.smtpserver.smtp1.username", "Ian.Malcom@jurassicpark.com");
-      user_pref("mail.smtpserver.smtp1.password", "TheFly123");
+      user_pref("mail.server.server1.userName", "{{ thunderbird_username }}@{{ email_domain }}");
+      user_pref("mail.smtpserver.smtp1.hostname", "smtp.{{ email_domain }}");
+      user_pref("mail.smtpserver.smtp1.username", "{{ thunderbird_username }}@{{ email_domain }}");
+      user_pref("mail.smtpserver.smtp1.password", "{{ thunderbird_password }}");
       user_pref("mail.smtpserver.smtp1.authMethod", 1);
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
 
-#- name: Ensure Thunderbird starts on login (optional)
-#  copy:
-#    dest: "/home/{{ ansible_user }}/.config/autostart/thunderbird.desktop"
-#    content: |
-#      [Desktop Entry]
-#      Type=Application
-#      Name=Thunderbird
-#      Exec=thunderbird
-#      X-GNOME-Autostart-enabled=true
-#    owner: "{{ ansible_user }}"
-#    group: "{{ ansible_user }}"
-#    mode: '0644'
-#  ignore_errors: yes
+- name: Ensure Thunderbird starts on login (optional)
+  copy:
+    dest: "/home/{{ ansible_user }}/.config/autostart/thunderbird.desktop"
+    content: |
+      [Desktop Entry]
+      Type=Application
+      Name=Thunderbird
+      Exec=thunderbird
+      X-GNOME-Autostart-enabled=true
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+  ignore_errors: yes
+
