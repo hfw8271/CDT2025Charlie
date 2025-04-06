@@ -1,0 +1,119 @@
+- hosts: plesiosaurus
+  gather_facts: no
+  vars:
+    jurassic_users:
+      - { name: 'john_hammond', password: 'welcomeToJurassicPark00!', admin: true }
+      - { name: 'ian_malcolm', password: 'lifeUhFindsAWay94!', admin: true }
+      - { name: 'mr_dna', password: 'blueprintOfLife54!', admin: true }
+      - { name: 'ellie_sattler', password: 'dinosaurDroppings72!', admin: false }
+      - { name: 'alan_grant', password: 'itsADinosaur68!', admin: false }
+
+  tasks:
+    - name: Install AD-Domain-Services
+      win_feature:
+        name: AD-Domain-Services
+        state: present
+        include_management_tools: yes
+
+    - name: Promote Plesiosaurus to Domain Controller
+      win_domain:
+        dns_domain_name: jurassicpark.local
+        domain_netbios_name: jurassicpark
+        safe_mode_password: JurassicParkDSRM@2025
+      register: promote
+
+    - name: Reboot after domain promotion
+      win_reboot:
+      when: promote.changed
+
+    - name: Create local users on Plesiosaurus
+      win_user:
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        state: present
+      loop: "{{ jurassic_users }}"
+      #Creates AD users
+    - name: Create AD users on Plesiosaurus
+      win_domain_user:
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        user_principal_name: "{{ item.name }}@jurassicpark.local"
+        state: present
+        path: "OU=Users,DC=jurassicpark,DC=local"
+        enabled: yes
+        groups: "{{ 'Domain Admins' if item.admin else '' }}"
+      loop: "{{ jurassic_users }}"
+
+- hosts: tyrannosaurus
+  gather_facts: no
+  vars:
+    jurassic_users:
+      - { name: 'john_hammond', password: 'welcomeToJurassicPark00!', admin: true }
+      - { name: 'ian_malcolm', password: 'lifeUhFindsAWay94!', admin: true }
+      - { name: 'mr_dna', password: 'blueprintOfLife54!', admin: true }
+      - { name: 'ellie_sattler', password: 'dinosaurDroppings72!', admin: false }
+      - { name: 'alan_grant', password: 'itsADinosaur68!', admin: false }
+
+  tasks:
+    - name: Install DNS Server
+      win_feature:
+        name: DNS
+        state: present
+        include_management_tools: yes
+
+    - name: Create local users on Tyrannosaurus
+      win_user:
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        state: present
+      loop: "{{ jurassic_users }}"
+    #Configure DNS so that plesio1 or plesio2 IPs resolve to the proper IP, configured so it works for both networks.
+    - name: Create forward lookup zone
+      win_dns_zone:
+        name: jurassicpark.local
+        zone_type: Primary
+        replication_scope: Forest
+
+    - name: Create A record for Plesiosaurus1
+      win_dns_record:
+        name: plesiosaurus1
+        type: A
+        value: 10.0.1.43
+        zone: jurassicpark.local
+        state: present
+
+    - name: Create A record for Plesiosaurus2
+      win_dns_record:
+        name: plesiosaurus2
+        type: A
+        value: 10.0.2.43
+        zone: jurassicpark.local
+        state: present
+
+    - name: Create reverse zone for 10.0.1.0/24
+      win_dns_zone:
+        name: 1.0.10.in-addr.arpa
+        zone_type: Primary
+        replication_scope: Forest
+
+    - name: Create reverse zone for 10.0.2.0/24
+      win_dns_zone:
+        name: 2.0.10.in-addr.arpa
+        zone_type: Primary
+        replication_scope: Forest
+
+    - name: PTR for Plesiosaurus1
+      win_dns_record:
+        name: 43
+        type: PTR
+        value: plesiosaurus1.jurassicpark.local
+        zone: 1.0.10.in-addr.arpa
+        state: present
+
+    - name: PTR for Plesiosaurus2
+      win_dns_record:
+        name: 43
+        type: PTR
+        value: plesiosaurus2.jurassicpark.local
+        zone: 2.0.10.in-addr.arpa
+        state: present
