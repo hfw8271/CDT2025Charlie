@@ -15,7 +15,15 @@
     group: "john_hammon"
     mode: '0755'
 
-- name: Deploy Thunderbird configuration
+- name: Ensure Thunderbird configuration directory exists
+  file:
+    path: "/home/john_hammon/.thunderbird"
+    state: directory
+    owner: "john_hammon"
+    group: "john_hammon"
+    mode: '0755'
+
+- name: Deploy Thunderbird configuration (prefs.js)
   copy:
     dest: "/home/john_hammon/.thunderbird/prefs.js"
     content: |
@@ -32,25 +40,26 @@
     group: "john_hammon"
     mode: '0644'
 
+
 - name: Ensure autostart directory exists
   file:
-    path: "/home/{{ ansible_user }}/.config/autostart"
+    path: "/home/john_hammon/.config/autostart"
     state: directory
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "john_hammon"
+    group: "john_hammon"
     mode: '0755'
 
 - name: Enable Thunderbird to start on login
   copy:
-    dest: "/home/{{ ansible_user }}/.config/autostart/thunderbird.desktop"
+    dest: "/home/john_hammon/.config/autostart/thunderbird.desktop"
     content: |
       [Desktop Entry]
       Type=Application
       Name=Thunderbird
       Exec=thunderbird
       X-GNOME-Autostart-enabled=true
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "john_hammon"
+    group: "john_hammon"
     mode: '0644'
 
 
