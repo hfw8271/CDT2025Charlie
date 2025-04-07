@@ -47,7 +47,7 @@
     dest: /etc/dovecot/conf.d/10-mail.conf
     content: |
       # Mailbox configuration
-      mail_location = maildir:/home/{{ dovecot_user }}/Maildir
+      mail_location = maildir:/home/{{ thunderbird_user }}/Maildir
       namespace inbox {
         inbox = yes
       }
@@ -57,20 +57,20 @@
 
 - name: Create Maildir for the user
   file:
-    path: "/home/{{ dovecot_user }}/Maildir"
+    path: "/home/{{ thunderbird_user }}/Maildir"
     state: directory
-    owner: "{{ dovecot_user }}"
-    group: "{{ dovecot_user }}"
+    owner: "{{ thunderbird_user }}"
+    group: "{{ thunderbird_user }}"
     mode: '0700'
     recurse: yes
 
 - name: Ensure user exists for email
   user:
-    name: "{{ dovecot_user }}"
-    password: "{{ dovecot_password | password_hash('sha512') }}"
+    name: "{{ thunderbird_user }}"
+    password: "{{ thunderbird_password | password_hash('sha512') }}"
     shell: /bin/false
 
 - name: Restart Dovecot to apply changes
   service:
     name: dovecot
-    state: restarted
+    state: restartedx`
