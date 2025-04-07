@@ -52,7 +52,7 @@
   shell: |
     echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.0 multiverse" | \
     sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list > /dev/null
-    
+
 - name: "Mongo restart apt"
   apt:
     update_cache: true
@@ -103,7 +103,7 @@
   register: password_secret
 
 - name: "Graylog - Generate admin password hash"
-  shell: "{{ password }} | sha256sum"
+  shell: "{{ graylog_password }} | sha256sum"
   register: sha_password
 
 - name: "Graylog - Configure password secret"
