@@ -49,7 +49,7 @@
       }
       userdb {
         driver = static
-        args = uid=vmail gid=vmail home=/home/%u/Maildir
+        args = uid={{ thunderbird_username }} gid={{ thunderbird_username }} home=/home/%u/Maildir
       }
     owner: root
     group: root
