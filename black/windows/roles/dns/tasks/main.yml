@@ -16,54 +16,38 @@
     type: Primary
   ignore_errors: yes
 
-# --- A Records ---
-- name: Create A record for tyrannosaurus1
+# --- A Records for Tyrannosaurus Servers ---
+- name: Create A records for Tyrannosauruses
   community.windows.win_dns_record:
-    name: tyrannosaurus1
+    name: "tyrannosaurus{{ item.number }}"
     type: A
-    value: 10.0.1.9
+    value: "10.0.{{ item.number }}.9"
     zone: jurassicpark.local
     state: present
-  ignore_errors: yes
-
-- name: Create A record for tyrannosaurus2
-  community.windows.win_dns_record:
-    name: tyrannosaurus2
-    type: A
-    value: 10.0.2.9
-    zone: jurassicpark.local
-    state: present
+  loop:
+    - { number: 1 }
+    - { number: 2 }
   ignore_errors: yes
 
 # --- Reverse Lookup Zones ---
-- name: Create Reverse Lookup Zone for 10.0.1.0/24
+- name: Create Reverse Lookup Zones
   community.windows.win_dns_zone:
-    name: 1.0.10.in-addr.arpa
+    name: "{{ item.zone }}"
     type: Primary
+  loop:
+    - { zone: "1.0.10.in-addr.arpa" }
+    - { zone: "2.0.10.in-addr.arpa" }
   ignore_errors: yes
 
-- name: Create Reverse Lookup Zone for 10.0.2.0/24
-  community.windows.win_dns_zone:
-    name: 2.0.10.in-addr.arpa
-    type: Primary
-  ignore_errors: yes
-
-# --- PTR Records ---
-- name: Create PTR record for tyrannosaurus1
+# --- PTR Records for Tyrannosaurus Servers ---
+- name: Create PTR records for Tyrannosauruses
   community.windows.win_dns_record:
-    name: 43
+    name: "9"
     type: PTR
-    value: tyrannosaurus1.jurassicpark.local
-    zone: 1.0.10.in-addr.arpa
+    value: "tyrannosaurus{{ item.number }}.jurassicpark.local"
+    zone: "{{ item.number }}.0.10.in-addr.arpa"
     state: present
+  loop:
+    - { number: 1 }
+    - { number: 2 }
   ignore_errors: yes
-
-- name: Create PTR record for tyrannosaurus2
-  community.windows.win_dns_record:
-    name: 43
-    type: PTR
-    value: tyrannosaurus2.jurassicpark.local
-    zone: 2.0.10.in-addr.arpa
-    state: present
-  ignore_errors: yes
-
