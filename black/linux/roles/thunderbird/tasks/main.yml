@@ -113,7 +113,7 @@
   copy:
     dest: /etc/dovecot/users
     content: |
-      {{ thunderbird_username }}:{PLAIN}{{ thunderbird_password }}
+      {{ thunderbird_username }}:{sha512}{{ thunderbird_password }}
     owner: root
     group: dovecot
     mode: '0640'
