@@ -1,4 +1,3 @@
----
 - name: Install required packages
   apt:
     name:
@@ -79,11 +78,11 @@
     regexp: '^-XX:\+Use(ParNewGC|ConcMarkSweepGC)'
     state: absent
 
-- name: Ensure G1GC is set for Graylog in GRAYLOG_SERVER_JAVA_OPTS
+- name: Set full JAVA_ARGS for Graylog
   lineinfile:
     path: /etc/default/graylog-server
     regexp: '^GRAYLOG_SERVER_JAVA_OPTS='
-    line: 'GRAYLOG_SERVER_JAVA_OPTS="-XX:+UseG1GC"'
+    line: 'GRAYLOG_SERVER_JAVA_OPTS="-Xms2g -Xmx2g -server -XX:+UseG1GC -XX:-OmitStackTraceInFastThrow"'
     create: yes
 
 - name: Generate password secret
@@ -117,20 +116,6 @@
     path: /etc/graylog/server/server.conf
     regexp: '^web_listen_uri ='
     line: 'web_listen_uri = http://127.0.0.1:9000/'
-
-- name: Set Graylog memory limits (initial)
-  when: gl_memory is defined
-  replace:
-    path: /etc/default/graylog-server
-    regexp: '-Xms\d+[mMgG]'
-    replace: "-Xms{{ gl_memory }}m"
-
-- name: Set Graylog memory limits (max)
-  when: gl_memory is defined
-  replace:
-    path: /etc/default/graylog-server
-    regexp: '-Xmx\d+[mMgG]'
-    replace: "-Xmx{{ gl_memory }}m"
 
 - name: Start Graylog
   service:
