@@ -17,7 +17,7 @@
     content: |
       # Basic Dovecot configuration
       protocols = imap pop3
-      mail_location = maildir:/home/{{ dovecot_user }}/Maildir
+      mail_location = maildir:/home/{{ thunderbird_user }}/Maildir
       disable_plaintext_auth = no
       auth_mechanisms = plain login
       ssl = no
