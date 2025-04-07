@@ -3,7 +3,7 @@
   apt:
     update_cache: yes
 
-- name: Install Dovecot
+- name: Install Dovecot and required packages
   apt:
     name:
       - dovecot-core
@@ -18,16 +18,6 @@
     shell: /bin/false
     state: present
 
-- name: Verify user password is set correctly
-  shell: "grep '{{ thunderbird_username }}' /etc/shadow"
-  register: shadow_entry
-  changed_when: false
-  check_mode: no
-
-- name: Display user password entry (hash only)
-  debug:
-    msg: "User has password set: {{ 'yes' if shadow_entry.stdout|length > 0 else 'no' }}"
-
 - name: Create Maildir for the user
   file:
     path: "/home/{{ thunderbird_username }}/Maildir"
@@ -41,19 +31,12 @@
   copy:
     dest: /etc/dovecot/dovecot.conf
     content: |
-      # Basic Dovecot configuration
       protocols = imap pop3
       mail_location = maildir:/home/{{ thunderbird_username }}/Maildir
       disable_plaintext_auth = no
       auth_mechanisms = plain login
       ssl = no
       auth_verbose = yes
-      
-      # Include auth config
-      !include conf.d/10-auth.conf
-      !include conf.d/10-mail.conf
-      
-      # Define passdb here as well to ensure it's loaded
       passdb {
         driver = passwd-file
         args = /etc/dovecot/users
@@ -70,7 +53,6 @@
   copy:
     dest: /etc/dovecot/conf.d/10-auth.conf
     content: |
-      # Authentication configuration
       disable_plaintext_auth = no
       auth_mechanisms = plain login
       passdb {
@@ -89,22 +71,10 @@
   copy:
     dest: /etc/dovecot/conf.d/10-mail.conf
     content: |
-      # Mailbox configuration
       mail_location = maildir:/home/{{ thunderbird_username }}/Maildir
       namespace inbox {
         inbox = yes
       }
-    owner: root
-    group: root
-    mode: '0644'
-
-- name: Create Dovecot PAM configuration
-  copy:
-    dest: /etc/pam.d/dovecot
-    content: |
-      # PAM configuration for Dovecot
-      auth    required    pam_unix.so
-      account required    pam_unix.so
     owner: root
     group: root
     mode: '0644'
@@ -117,32 +87,8 @@
     owner: root
     group: dovecot
     mode: '0640'
-  register: dovecot_passwd_file
-  
-- name: Debug password file content (without showing actual password)
-  debug:
-    msg: "Password file created for user {{ thunderbird_username }} with PLAIN scheme"
-  when: dovecot_passwd_file.changed
 
-- name: Ensure proper permissions on dovecot users file
-  file:
-    path: /etc/dovecot/users
-    owner: root
-    group: dovecot
-    mode: '0640'
-  register: dovecot_users_perms
-
-- name: Debug dovecot users file permissions
-  debug:
-    msg: "Current permissions: {{ dovecot_users_perms }}"
-
-- name: Fix inconsistent home directory path in dovecot.conf
-  replace:
-    path: /etc/dovecot/dovecot.conf
-    regexp: 'home=/home/%u/Maildir'
-    replace: 'home=/home/{{ thunderbird_username }}/Maildir'
-
-- name: Ensure dovecot can read its configuration files
+- name: Ensure proper permissions on Dovecot configuration files
   file:
     path: "{{ item }}"
     owner: root
@@ -152,8 +98,9 @@
     - /etc/dovecot/dovecot.conf
     - /etc/dovecot/conf.d/10-auth.conf
     - /etc/dovecot/conf.d/10-mail.conf
+    - /etc/dovecot/users
 
-- name: Create dovecot user's Maildir subdirectories
+- name: Create Maildir subdirectories
   file:
     path: "/home/{{ thunderbird_username }}/Maildir/{{ item }}"
     state: directory
@@ -169,4 +116,3 @@
   service:
     name: dovecot
     state: restarted
-
