@@ -1,0 +1,137 @@
+---
+- name: Install Graylog on Debian 11
+  hosts: localhost
+  become: true
+  tasks:
+
+    # update apt cache
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    # Install dependencies
+    - name: Install required dependencies
+      apt:
+        name:
+          - openjdk-11-jre-headless
+          - apt-transport-https
+          - wget
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+
+    # Add Graylog repository
+    - name: Add Graylog repository
+      apt:
+        deb: "https://packages.graylog2.org/repo/packages/graylog-2.4-repository_latest.deb"
+        update_cache: true
+        state: present
+
+
+    # Install Graylog package
+    - name: Install Graylog
+      apt: 
+        name: "graylog-server"
+        state: present
+
+    # MongoDB
+    #- name: MongoDB key installation
+    #  shell: |
+    #    wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add - "deb https://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+    #  become: yes
+
+    #- name: update cache
+    #  apt:
+    #    update_cache: true
+
+    #- name: Add mongo packages repo
+    #  apt_key: 
+    #    id: 656408e390cfb1f5
+    #    keyserver: keyserver.ubuntu.com
+
+    #- name: add repo
+    #  apt_repository:
+    #    repo: deb "https://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main"
+    #    state: present
+    #- name: install packages
+    #  apt: 
+    #    pkg: mongodb-org 
+    #    state: present
+
+    #- name: Install Mongo
+    #  become: yes
+    #  apt: 
+    #    name: mongodb-org
+    #    state: 4.4
+    #    update_cache: yes
+
+    # Enable and start MongoDB service
+    #- name: Ensure MongoDB is running
+    #  service:
+    #    name: mongodb
+    #    state: started
+    #    enabled: yes
+
+
+    # Install and configure Elasticsearch
+    - name: Install Elasticsearch
+      apt: 
+        name: elasticsearch
+        state: present
+
+
+    # Enable and start Elasticsearch service
+    - name: Ensure Elasticsearch is running
+      service:
+        name: elasticsearch
+        state: started
+        enabled: yes
+
+
+    # Enable and start Graylog service
+    - name: Enable and start Graylog service
+      service:
+        name: graylog-server
+        state: started
+        enabled: yse
+
+    # configure Graylog server
+    - name: Set the password secret in Graylog configuration
+      lineinfile:
+        path: /etc/graylog/server/server.conf
+        regexp: '^#password_secret ='
+        line: 'password_secret = {{ lookup("passwordstore", "graylog_password_secret") }}'
+
+    - name: Set the root password hash in Graylog configuration
+      lineinfile:
+        path: /etc/graylog/server/server.conf
+        regexp: '^#root_password_sha2 ='
+        line: 'root_password_sha2 = {{ lookup("passwordstore", "graylog_root_password") }}'
+
+
+    - name: Set the web interface listen address in Graylog configuration
+      lineinfile:
+        path: /etc/graylog/server/server.conf
+        regexp: '^#web_listen_uri ='
+        line: 'web_listen_uri = http://0.0.0.0:9000/'
+
+
+    - name: Set the rest listen address in Graylog configuration
+      lineinfile:
+        path: /etc/graylog/server/server.conf
+        regexp: '^#rest_listen_uri ='
+        line: 'rest_listen_uri = http://0.0.0.0:12900/'
+
+
+    - name: Set the Elasticsearch cluster name in Graylog configuration
+      lineinfile:
+        path: /etc/graylog/server/server.conf
+        regexp: '^#elasticsearch_cluster_name ='
+        line: 'elasticsearch_cluster_name = graylog'
+
+    # Restart Graylog to apply the changes
+    - name: Restart Graylog service
+      service:
+        name: graylog-server
+        state: restarted

@@ -1,0 +1,105 @@
+---
+- name: Setup Graylog on Debian 11
+  hosts: localhost
+  become: yes
+  vars:
+    graylog_password_secret: "{{ lookup('password', '/dev/null length=96 chars=ascii_letters') }}"
+    graylog_admin_password: "YourStrongPassword"
+    graylog_server_name: "graylog.example.org"
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - openjdk-11-jre-headless
+          - uuid-runtime
+          - pwgen
+          - dirmngr
+          - gnupg
+          - wget
+        state: present
+
+    - name: Add MongoDB 5.x GPG key and repository for Debian 11
+      shell: |
+        wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
+        echo "deb https://repo.mongodb.org/apt/debian bullseye/mongodb-org/5.0 main" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+      become: yes
+
+    - name: Install MongoDB
+      apt:
+        name: mongodb-org
+        state: present
+      register: mongodb_installed
+
+    - name: Start and enable MongoDB service
+      systemd:
+        name: mongod
+        enabled: yes
+        state: started
+
+    - name: Install Elasticsearch
+      apt:
+        name: elasticsearch-oss
+        state: present
+      register: elasticsearch_installed
+      become: yes
+
+    - name: Add Elasticsearch GPG key and repository
+      shell: |
+        wget -qO https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
+        echo "deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list
+      when: elasticsearch_installed.changed
+
+    - name: Install Graylog server
+      apt:
+        name:
+          - graylog-server
+          - graylog-enterprise-plugins
+          - graylog-integrations-plugins
+          - graylog-enterprise-integrations-plugins
+        state: present
+      register: graylog_installed
+      become: yes
+
+    - name: Add Graylog repository
+      shell: |
+        wget https://packages.graylog2.org/repo/packages/graylog-4.2-repository_latest.deb
+        dpkg -i graylog-4.2-repository_latest.deb
+      when: graylog_installed.changed
+
+    - name: Generate Graylog password secret
+      set_fact:
+        password_secret: "{{ lookup('password', '/dev/null length=96 chars=ascii_letters') }}"
+        
+    - name: Generate Graylog admin password hash
+      set_fact:
+        root_password_sha2: "{{ graylog_admin_password | password_hash('sha256') }}"
+        
+    - name: Configure Graylog server.conf
+      lineinfile:
+        path: /etc/graylog/server/server.conf
+        regexp: '^#password_secret ='
+        line: "password_secret = {{ password_secret }}"
+        
+    - name: Configure Graylog admin password
+      lineinfile:
+        path: /etc/graylog/server/server.conf
+        regexp: '^#root_password_sha2 ='
+        line: "root_password_sha2 = {{ root_password_sha2 }}"
+
+    - name: Enable and start Elasticsearch service
+      systemd:
+        name: elasticsearch
+        enabled: yes
+        state: restarted
+
+    - name: Enable and start Graylog server service
+      systemd:
+        name: graylog-server
+        enabled: yes
+        state: started
