@@ -1,167 +1,126 @@
-# - hosts: localhost
-#   connection: local
-#   become: yes
-#   become_user: root
-#   vars_prompt:
-#     - name: "password"
-#       prompt: "Enter 'admin' user password"
-#       private: yes
-#       default: graylog
-#   tasks:
 ---
-- name: "Install requirement - gnupg"
+- name: Install required packages
   apt:
-    name: "gnupg"
-    update_cache: true
+    name:
+      - gnupg
+      - curl
+      - apt-transport-https
+      - openjdk-11-jre-headless
+      - uuid-runtime
+      - pwgen
     state: present
-- name: "Install requirement - curl"
-  apt: 
-    name: "curl"
-    update_cache: true
-    state: present
-- name: "Install requirement - apt-transport-https"
-  apt:
-    name: "apt-transport-https"
-    update_cache: true
-    state: present
+    update_cache: yes
 
-- name: "Install requirement - openjdk-8-jre-headless"
-  apt:
-    name: "openjdk-8-jre-headless"
-    update_cache: true
-    state: present
-
-- name: "Install requirement - uuid-runtime"
-  apt:
-    name: "uuid-runtime"
-    update_cache: true
-    state: present
-
-- name: "Install requirement - pwgen"
-  apt:
-    name: "pwgen"
-    update_cache: true
-    state: present
-
-- name: "MongoDB - Download repository GPG key"
+- name: Add MongoDB GPG key
   shell: |
-    curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
-    gpg --dearmor | sudo tee /usr/share/keyrings/mongodb-server-8.0.gpg > /dev/null
+    curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | \
+    gpg --dearmor | sudo tee /usr/share/keyrings/mongodb-server.gpg > /dev/null
 
-- name: "MongoDB - Create APT source list file"
+- name: Add MongoDB APT repo
   shell: |
-    echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.0 multiverse" | \
-    sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list > /dev/null
+    echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | \
+    sudo tee /etc/apt/sources.list.d/mongodb-org.list > /dev/null
 
-- name: "Mongo restart apt"
+- name: Install MongoDB
   apt:
-    update_cache: true
-    name: "mongodb-org"
+    name: mongodb-org
+    update_cache: yes
+    state: present
 
-- name: "elasticsearch"
+- name: Start MongoDB
+  service:
+    name: mongod
+    state: started
+    enabled: yes
+
+- name: Add Elasticsearch GPG key
   apt_key:
     url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
     state: present
 
-- name: "Elasticsearch - Add repo"
+- name: Add Elasticsearch repo
   apt_repository:
-    repo: deb https://artifacts.elastic.co/packages/5.x/apt stable main
+    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
     state: present
 
-- name: "Elasticsearch - Install package"
+- name: Install Elasticsearch
   apt:
-    name: "elasticsearch"
-    update_cache: true
+    name: elasticsearch
+    update_cache: yes
     state: present
 
-- name: "Elasticsearch - Configure java path"
-  replace:
+- name: Set JAVA_HOME for Elasticsearch
+  lineinfile:
     path: /etc/default/elasticsearch
-    regexp: JAVA_HOME=$
-    replace: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+    regexp: '^JAVA_HOME='
+    line: 'JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64'
 
-- name: "Elasticsearch - Configure service"
+- name: Start Elasticsearch
   service:
-    name: "elasticsearch"
-    enabled: yes
+    name: elasticsearch
     state: started
+    enabled: yes
 
-- name: "Graylog - Get package"
+- name: Add Graylog repository package
   apt:
-    deb: https://packages.graylog2.org/repo/packages/graylog-2.4-repository_latest.deb
-    update_cache: true
+    deb: https://packages.graylog2.org/repo/packages/graylog-{{ graylog_version }}-repository_latest.deb
+    update_cache: yes
     state: present
 
-- name: "Graylog - Install package"
+- name: Install Graylog
   apt:
-    update_cache: true
-    name: "graylog-server"
+    name: graylog-server
+    update_cache: yes
     state: present
 
-- name: "Graylog - Generate password secret"
+- name: Generate password secret
   command: pwgen -N 1 -s 96
   register: password_secret
 
-- name: "Graylog - Generate admin password hash"
-  shell: "{{ graylog_password }} | sha256sum"
+- name: Generate admin password hash
+  shell: echo -n "{{ graylog_password }}" | sha256sum
   register: sha_password
 
-- name: "Graylog - Configure password secret"
-  replace:
+- name: Set Graylog password secret
+  lineinfile:
     path: /etc/graylog/server/server.conf
-    regexp: ^password_secret =$
-    replace: "password_secret = {{ password_secret.stdout }}"
+    regexp: '^password_secret ='
+    line: "password_secret = {{ password_secret.stdout }}"
 
-- name: "Graylog - Configure admin password hash"
-  replace:
+- name: Set Graylog admin password hash
+  lineinfile:
     path: /etc/graylog/server/server.conf
-    regexp: "(?!.*{{ sha_password.stdout.split(' ')[0] }})^root_password_sha2 .+$"
-    replace: "root_password_sha2 = {{ sha_password.stdout.split(' ')[0] }}"
+    regexp: '^root_password_sha2 ='
+    line: "root_password_sha2 = {{ sha_password.stdout.split(' ')[0] }}"
 
-- name: "Graylog - Configure rest_listen_uri"
-  replace:
+- name: Set rest_listen_uri
+  lineinfile:
     path: /etc/graylog/server/server.conf
-    regexp: "^(?!.*)^rest_listen_uri =.+$"
-    replace: "rest_listen_uri = 127.0.0.1:9000"
+    regexp: '^rest_listen_uri ='
+    line: 'rest_listen_uri = http://127.0.0.1:9000/api/'
 
-- name: "Graylog - Configure web_listen_uri"
-  replace:
+- name: Set web_listen_uri
+  lineinfile:
     path: /etc/graylog/server/server.conf
-    regexp: "^(?!.*)^web_listen_uri =.+$"
-    replace: "web_listen_uri = 127.0.0.1:9000/api/"
+    regexp: '^web_listen_uri ='
+    line: 'web_listen_uri = http://127.0.0.1:9000/'
 
-- name: "Graylog - Configure initial memory"
+- name: Set Graylog memory limits (initial)
   when: gl_memory is defined
   replace:
     path: /etc/default/graylog-server
-    regexp: '(?!.*-Xms{{ gl_memory }}m)-Xms\d+?[gm]'
+    regexp: '-Xms\d+[mMgG]'
     replace: "-Xms{{ gl_memory }}m"
 
-- name: "Graylog - Configure maximum memory"
+- name: Set Graylog memory limits (max)
   when: gl_memory is defined
   replace:
     path: /etc/default/graylog-server
-    regexp: '(?!.*-Xmx{{ gl_memory }}m)-Xmx\d+?[gm]'
-    replace: "-Xms{{ gl_memory }}m"
+    regexp: '-Xmx\d+[mMgG]'
+    replace: "-Xmx{{ gl_memory }}m"
 
-- name: "Graylog - Configure service"
+- name: Start Graylog
   service:
-    name: "graylog-server"
-    enabled: yes
-    state: started
-
-# handlers:
-# - name: "Elasticsearch - Restart service"
-#   service:
-#     name: "elasticsearch"
-#     state: restarted
-
-# - name: "Graylog - Restart service"
-#   service:
-#     name: "graylog-server"
-#     state: restarted
-- name: "Ensure Elasticsearch is started"
-  service:
-    name: "elasticsearch"
+    name: graylog-server
     state: started
     enabled: yes
