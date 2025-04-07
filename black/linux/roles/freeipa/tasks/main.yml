@@ -1,4 +1,4 @@
 - name: Set hostname based on team
   hostname:
-    name: "{% if 'team1' in ansible_limit %}giganotosaurus1.jp1.local{% elif 'team2' in ansible_limit %}giganotosaurus2.jp2.local{% else %}unknown.local{% endif %}"
+    name: "{% if 'team01' in ansible_limit %}giganotosaurus1.jp1.local{% elif 'team02' in ansible_limit %}giganotosaurus2.jp2.local{% else %}unknown.local{% endif %}"
 
