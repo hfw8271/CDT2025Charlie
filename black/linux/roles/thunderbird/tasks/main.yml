@@ -17,7 +17,7 @@
     content: |
       # Basic Dovecot configuration
       protocols = imap pop3
-      mail_location = maildir:/home/{{ thunderbird_user }}/Maildir
+      mail_location = maildir:/home/{{ thunderbird_usernamename }}/Maildir
       disable_plaintext_auth = no
       auth_mechanisms = plain login
       ssl = no
@@ -47,7 +47,7 @@
     dest: /etc/dovecot/conf.d/10-mail.conf
     content: |
       # Mailbox configuration
-      mail_location = maildir:/home/{{ thunderbird_user }}/Maildir
+      mail_location = maildir:/home/{{ thunderbird_username }}/Maildir
       namespace inbox {
         inbox = yes
       }
@@ -57,16 +57,16 @@
 
 - name: Create Maildir for the user
   file:
-    path: "/home/{{ thunderbird_user }}/Maildir"
+    path: "/home/{{ thunderbird_username }}/Maildir"
     state: directory
-    owner: "{{ thunderbird_user }}"
-    group: "{{ thunderbird_user }}"
+    owner: "{{ thunderbird_username }}"
+    group: "{{ thunderbird_username }}"
     mode: '0700'
     recurse: yes
 
 - name: Ensure user exists for email
   user:
-    name: "{{ thunderbird_user }}"
+    name: "{{ thunderbird_username }}"
     password: "{{ thunderbird_password | password_hash('sha512') }}"
     shell: /bin/false
 
