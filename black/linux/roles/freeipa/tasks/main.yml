@@ -1,125 +1,125 @@
-    - name: Set the hostname based on the team
-      hostname:
-        name: >-
-          {% if 'team01' in ansible_limit %}
-            giganotosaurus1.jp1.local
-          {% elif 'team02' in ansible_limit %}
-            giganotosaurus2.jp2.local
-          {% else %}
-            unknown.local
-          {% endif %}
+- name: Set the hostname based on the team
+  hostname:
+    name: >-
+      {% if 'team01' in ansible_limit %}
+        giganotosaurus1.jp1.local
+      {% elif 'team02' in ansible_limit %}
+        giganotosaurus2.jp2.local
+      {% else %}
+        unknown.local
+      {% endif %}
 
-    - name: Set the hostname for team01 machines
-      hostname:
-        name: "{{ inventory_hostname }}"
-      when: "'team01' in ansible_limit"
+- name: Set the hostname for team01 machines
+  hostname:
+    name: "{{ inventory_hostname }}"
+  when: "'team01' in ansible_limit"
 
-    - name: Set the hostname for team02 machines
-      hostname:
-        name: "{{ inventory_hostname }}"
-      when: "'team02' in ansible_limit"
+- name: Set the hostname for team02 machines
+  hostname:
+    name: "{{ inventory_hostname }}"
+  when: "'team02' in ansible_limit"
 
-    ### DNS CONFIGURATION ###
-    - name: Set primary DNS server for team01
-      lineinfile:
-        path: /etc/resolv.conf
-        state: present
-        line: "nameserver 10.0.1.1"
-      when: "'team01' in ansible_limit"
+### DNS CONFIGURATION ###
+- name: Set primary DNS server for team01
+  lineinfile:
+    path: /etc/resolv.conf
+    state: present
+    line: "nameserver 10.0.1.1"
+  when: "'team01' in ansible_limit"
 
-    - name: Set primary DNS server for team02
-      lineinfile:
-        path: /etc/resolv.conf
-        state: present
-        line: "nameserver 10.0.2.1"
-      when: "'team02' in ansible_limit"
+- name: Set primary DNS server for team02
+  lineinfile:
+    path: /etc/resolv.conf
+    state: present
+    line: "nameserver 10.0.2.1"
+  when: "'team02' in ansible_limit"
 
-    - name: Set alternate DNS server for both teams
-      lineinfile:
-        path: /etc/resolv.conf
-        state: present
-        line: "nameserver 8.8.8.8"
+- name: Set alternate DNS server for both teams
+  lineinfile:
+    path: /etc/resolv.conf
+    state: present
+    line: "nameserver 8.8.8.8"
 
-    - name: Configure /etc/hosts file for team01
-      lineinfile:
-        path: /etc/hosts
-        state: present
-        line: "{{ item }}"
-      when: "'team01' in ansible_limit"
-      loop:
-        - "10.0.1.1 giganotosaurus1.jp1.local"
-        - "192.168.1.89 brachiosaurus1.jp1.local"
-        - "192.168.1.109 stegosaurus1.jp1.local"
-        - "192.168.1.12 triceratops1.jp1.local"
-        - "10.0.1.77 allosaurus1.jp1.local"
+- name: Configure /etc/hosts file for team01
+  lineinfile:
+    path: /etc/hosts
+    state: present
+    line: "{{ item }}"
+  when: "'team01' in ansible_limit"
+  loop:
+    - "10.0.1.1 giganotosaurus1.jp1.local"
+    - "192.168.1.89 brachiosaurus1.jp1.local"
+    - "192.168.1.109 stegosaurus1.jp1.local"
+    - "192.168.1.12 triceratops1.jp1.local"
+    - "10.0.1.77 allosaurus1.jp1.local"
 
-    - name: Configure /etc/hosts file for team02
-      lineinfile:
-        path: /etc/hosts
-        state: present
-        line: "{{ item }}"
-      when: "'team02' in ansible_limit"
-      loop:
-        - "10.0.2.1 giganotosaurus2.jp2.local"
-        - "192.168.2.89 brachiosaurus2.jp2.local"
-        - "192.168.2.109 stegosaurus2.jp2.local"
-        - "192.168.2.12 triceratops2.jp2.local"
-        - "10.0.2.77 allosaurus2.jp2.local"
+- name: Configure /etc/hosts file for team02
+  lineinfile:
+    path: /etc/hosts
+    state: present
+    line: "{{ item }}"
+  when: "'team02' in ansible_limit"
+  loop:
+    - "10.0.2.1 giganotosaurus2.jp2.local"
+    - "192.168.2.89 brachiosaurus2.jp2.local"
+    - "192.168.2.109 stegosaurus2.jp2.local"
+    - "192.168.2.12 triceratops2.jp2.local"
+    - "10.0.2.77 allosaurus2.jp2.local"
 
-    ### BIND DNS SETUP ###
-    - name: Install BIND and dependencies for DNS
-      package:
-        name:
-          - bind
-          - bind-utils
-        state: present
+### BIND DNS SETUP ###
+- name: Install BIND and dependencies for DNS
+  package:
+    name:
+      - bind
+      - bind-utils
+    state: present
 
-    - name: Configure BIND options
-      copy:
-        dest: /etc/named.conf
-        content: |
-          options {
-              listen-on port 53 { 127.0.0.1; {{ dns_zones[inventory_hostname]['server_ip'] }}; };
-              listen-on-v6 port 53 { ::1; };
-              directory "/var/named";
-              dump-file "/var/named/data/cache_dump.db";
-              statistics-file "/var/named/data/named_stats.txt";
-              memstatistics-file "/var/named/data/named_mem_stats.txt";
-              allow-query { any; };
-              recursion no;
-              max-cache-size 512M;
-          };
-          zone "{{ dns_zones[inventory_hostname]['zone_name'] }}" IN {
-              type master;
-              file "/var/named/{{ dns_zones[inventory_hostname]['zone_name'] }}.zone";
-          };
+- name: Configure BIND options
+  copy:
+    dest: /etc/named.conf
+    content: |
+      options {
+          listen-on port 53 { 127.0.0.1; {{ dns_zones[inventory_hostname]['server_ip'] }}; };
+          listen-on-v6 port 53 { ::1; };
+          directory "/var/named";
+          dump-file "/var/named/data/cache_dump.db";
+          statistics-file "/var/named/data/named_stats.txt";
+          memstatistics-file "/var/named/data/named_mem_stats.txt";
+          allow-query { any; };
+          recursion no;
+          max-cache-size 512M;
+      };
+      zone "{{ dns_zones[inventory_hostname]['zone_name'] }}" IN {
+          type master;
+          file "/var/named/{{ dns_zones[inventory_hostname]['zone_name'] }}.zone";
+      };
 
-    - name: Create DNS zone file for the team
-      copy:
-        dest: /var/named/{{ dns_zones[inventory_hostname]['zone_name'] }}.zone
-        content: |
-          $TTL 86400
-          @   IN  SOA {{ dns_zones[inventory_hostname]['hosts'][0]['name'] }}.{{ dns_zones[inventory_hostname]['zone_name'] }}. admin.{{ dns_zones[inventory_hostname]['zone_name'] }}. (
-                2025040701 ; Serial
-                3600       ; Refresh
-                1800       ; Retry
-                1209600    ; Expire
-                86400      ; Minimum TTL
-          )
-              IN  NS  {{ dns_zones[inventory_hostname]['hosts'][0]['name'] }}.{{ dns_zones[inventory_hostname]['zone_name'] }}.
-          {% for host in dns_zones[inventory_hostname]['hosts'] %}
-          {{ host.name }}    IN  A   {{ host.ip }}
-          {% endfor %}
+- name: Create DNS zone file for the team
+  copy:
+    dest: /var/named/{{ dns_zones[inventory_hostname]['zone_name'] }}.zone
+    content: |
+      $TTL 86400
+      @   IN  SOA {{ dns_zones[inventory_hostname]['hosts'][0]['name'] }}.{{ dns_zones[inventory_hostname]['zone_name'] }}. admin.{{ dns_zones[inventory_hostname]['zone_name'] }}. (
+            2025040701 ; Serial
+            3600       ; Refresh
+            1800       ; Retry
+            1209600    ; Expire
+            86400      ; Minimum TTL
+      )
+          IN  NS  {{ dns_zones[inventory_hostname]['hosts'][0]['name'] }}.{{ dns_zones[inventory_hostname]['zone_name'] }}.
+      {% for host in dns_zones[inventory_hostname]['hosts'] %}
+      {{ host.name }}    IN  A   {{ host.ip }}
+      {% endfor %}
 
-    - name: Set permissions for DNS zone file
-      file:
-        path: /var/named/{{ dns_zones[inventory_hostname]['zone_name'] }}.zone
-        owner: named
-        group: named
-        mode: 0640
+- name: Set permissions for DNS zone file
+  file:
+    path: /var/named/{{ dns_zones[inventory_hostname]['zone_name'] }}.zone
+    owner: named
+    group: named
+    mode: 0640
 
-    - name: Restart and enable BIND
-      systemd:
-        name: named
-        state: restarted
-        enabled: yes
+- name: Restart and enable BIND
+  systemd:
+    name: named
+    state: restarted
+    enabled: yes
