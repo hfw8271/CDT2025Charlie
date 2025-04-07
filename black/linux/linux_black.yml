@@ -21,7 +21,7 @@
     - thunderbird
 
 - name: freeipa
-  hosts: freeipa
+  hosts: all
   become: yes
   roles:
     - freeipa
