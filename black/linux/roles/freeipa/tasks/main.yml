@@ -6,12 +6,12 @@
       - bind-utils
     state: present
 
-- name: Configure BIND options team1
+- name: Configure BIND options
   copy:
     dest: /etc/named.conf
     content: |
       options {
-          listen-on port 53 { 127.0.0.1; };
+          listen-on port 53 { 127.0.0.1; {{ dns_zones[inventory_hostname]['server_ip'] }}; };
           listen-on-v6 port 53 { ::1; };
           directory "/var/named";
           dump-file "/var/named/data/cache_dump.db";
@@ -21,32 +21,10 @@
           recursion no;
           max-cache-size 256M;
       };
-      zone "jp1.local" IN {
+      zone "{{ dns_zones[inventory_hostname]['zone_name'] }}" IN {
           type master;
-          file "/var/named/jp1.local.zone";
+          file "/var/named/{{ dns_zones[inventory_hostname]['zone_name'] }}.zone";
       };
-  when: "'team01' in ansible_limit"
-
-- name: Configure BIND options team2
-  copy:
-    dest: /etc/named.conf
-    content: |
-      options {
-          listen-on port 53 { 127.0.0.1; };
-          listen-on-v6 port 53 { ::1; };
-          directory "/var/named";
-          dump-file "/var/named/data/cache_dump.db";
-          statistics-file "/var/named/data/named_stats.txt";
-          memstatistics-file "/var/named/data/named_mem_stats.txt";
-          allow-query { any; };
-          recursion no;
-          max-cache-size 256M;
-      };
-      zone "jp2.local" IN {
-          type master;
-          file "/var/named/jp2.local.zone";
-      };
-  when: "'team01' in ansible_limit"
 
 - name: Create DNS zone file for the team
   copy:
