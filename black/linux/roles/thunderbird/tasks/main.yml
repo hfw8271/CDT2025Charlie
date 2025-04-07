@@ -117,12 +117,7 @@
     owner: root
     group: dovecot
     mode: '0640'
-  register: dovecot_passwd_file
-  
-- name: Debug password file content (without showing actual password)
-  debug:
-    msg: "Password file created for user {{ thunderbird_username }} with PLAIN scheme"
-  when: dovecot_passwd_file.changed
+  notify: restart dovecot
 
 - name: Ensure proper permissions on dovecot users file
   file:
