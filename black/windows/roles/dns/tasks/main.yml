@@ -46,7 +46,6 @@
   community.windows.win_dns_zone:
     name: 2.0.10.in-addr.arpa
     type: Primary
-    replication_scope: Forest
   ignore_errors: yes
 
 # --- PTR Records ---
