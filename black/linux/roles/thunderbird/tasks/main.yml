@@ -72,6 +72,17 @@
     group: root
     mode: '0644'
 
+- name: Create Dovecot PAM configuration
+  copy:
+    dest: /etc/pam.d/dovecot
+    content: |
+      # PAM configuration for Dovecot
+      auth    required    pam_unix.so
+      account required    pam_unix.so
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: Restart Dovecot to apply changes
   service:
     name: dovecot
