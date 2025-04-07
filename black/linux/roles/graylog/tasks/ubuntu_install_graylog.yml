@@ -1,0 +1,161 @@
+- hosts: localhost
+  connection: local
+  become: yes
+  become_user: root
+  vars_prompt:
+    - name: "password"
+      prompt: "Enter 'admin' user password"
+      private: yes
+      default: graylog
+  tasks:
+
+  - name: "Install requirement - gnupg"
+    apt:
+      name: "gnupg"
+      update_cache: true
+      state: present
+  - name: "Install requirement - curl"
+    apt: 
+      name: "curl"
+      update_cache: true
+      state: present
+  - name: "Install requirement - apt-transport-https"
+    apt:
+      name: "apt-transport-https"
+      update_cache: true
+      state: present
+
+  - name: "Install requirement - openjdk-8-jre-headless"
+    apt:
+      name: "openjdk-8-jre-headless"
+      update_cache: true
+      state: present
+
+  - name: "Install requirement - uuid-runtime"
+    apt:
+      name: "uuid-runtime"
+      update_cache: true
+      state: present
+
+  - name: "Install requirement - pwgen"
+    apt:
+      name: "pwgen"
+      update_cache: true
+      state: present
+
+  - name: "MongoDB - Download repository GPG key"
+    shell: |
+      curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
+      sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg \
+      --dearmor
+  - name: "MongoDB - list file"
+    shell: |
+      echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+
+  - name: "Mongo restart apt"
+    apt:
+      update_cache: true
+      name: "mongodb-org"
+
+  - name: "elasticsearch"
+    apt_key:
+      url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+      state: present
+
+  - name: "Elasticsearch - Add repo"
+    apt_repository:
+      repo: deb https://artifacts.elastic.co/packages/5.x/apt stable main
+      state: present
+
+  - name: "Elasticsearch - Install package"
+    apt:
+      name: "elasticsearch"
+      update_cache: true
+      state: present
+
+  - name: "Elasticsearch - Configure java path"
+    replace:
+      path: /etc/default/elasticsearch
+      regexp: JAVA_HOME=$
+      replace: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+
+  - name: "Elasticsearch - Configure service"
+    service:
+      name: "elasticsearch"
+      enabled: yes
+      state: started
+
+  - name: "Graylog - Get package"
+    apt:
+      deb: https://packages.graylog2.org/repo/packages/graylog-2.4-repository_latest.deb
+      update_cache: true
+      state: present
+
+  - name: "Graylog - Install package"
+    apt:
+      update_cache: true
+      name: "graylog-server"
+      state: present
+
+  - name: "Graylog - Generate password secret"
+    command: pwgen -N 1 -s 96
+    register: password_secret
+
+  - name: "Graylog - Generate admin password hash"
+    shell: "{{ password }} | sha256sum"
+    register: sha_password
+
+  - name: "Graylog - Configure password secret"
+    replace:
+      path: /etc/graylog/server/server.conf
+      regexp: ^password_secret =$
+      replace: "password_secret = {{ password_secret.stdout }}"
+
+  - name: "Graylog - Configure admin password hash"
+    replace:
+      path: /etc/graylog/server/server.conf
+      regexp: "(?!.*{{ sha_password.stdout.split(' ')[0] }})^root_password_sha2 .+$"
+      replace: "root_password_sha2 = {{ sha_password.stdout.split(' ')[0] }}"
+
+  - name: "Graylog - Configure rest_listen_uri"
+    replace:
+      path: /etc/graylog/server/server.conf
+      regexp: "^(?!.*)^rest_listen_uri =.+$"
+      replace: "rest_listen_uri = 127.0.0.1:9000"
+
+  - name: "Graylog - Configure web_listen_uri"
+    replace:
+      path: /etc/graylog/server/server.conf
+      regexp: "^(?!.*)^web_listen_uri =.+$"
+      replace: "web_listen_uri = 127.0.0.1:9000/api/"
+
+  - name: "Graylog - Configure initial memory"
+    when: gl_memory is defined
+    replace:
+      path: /etc/default/graylog-server
+      regexp: '(?!.*-Xms{{ gl_memory }}m)-Xms\d+?[gm]'
+      replace: "-Xms{{ gl_memory }}m"
+
+  - name: "Graylog - Configure maximum memory"
+    when: gl_memory is defined
+    replace:
+      path: /etc/default/graylog-server
+      regexp: '(?!.*-Xmx{{ gl_memory }}m)-Xmx\d+?[gm]'
+      replace: "-Xms{{ gl_memory }}m"
+
+  - name: "Graylog - Configure service"
+    service:
+      name: "graylog-server"
+      enabled: yes
+      state: started
+
+  handlers:
+  - name: "Elasticsearch - Restart service"
+    service:
+      name: "elasticsearch"
+      state: restarted
+
+  - name: "Graylog - Restart service"
+    service:
+      name: "graylog-server"
+      state: restarted
