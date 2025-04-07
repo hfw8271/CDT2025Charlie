@@ -8,13 +8,13 @@
   set_fact:
     log_forward_ip: >-
       {% if ansible_default_ipv4.address.startswith('10.0.1.') %}
-        10.0.1.251:514
+        10.0.1.251
       {% elif ansible_default_ipv4.address.startswith('10.0.2.') %}
-        10.0.2.251:514
+        10.0.2.251
       {% elif ansible_default_ipv4.address.startswith('192.168.1.') %}
-        192.168.1.251:514
+        192.168.1.251
       {% elif ansible_default_ipv4.address.startswith('192.168.2.') %}
-        192.168.2.251:514
+        192.168.2.251
       {% else %}
         0.0.0.0:514
       {% endif %}
