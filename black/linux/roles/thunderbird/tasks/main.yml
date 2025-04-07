@@ -49,8 +49,8 @@
       disable_plaintext_auth = no
       auth_mechanisms = plain login
       passdb {
-        driver = pam
-        args = dovecot
+        driver = passwd-file
+        args = /etc/dovecot/users
       }
       userdb {
         driver = passwd
@@ -82,6 +82,15 @@
     owner: root
     group: root
     mode: '0644'
+
+- name: Create Dovecot passwd-file
+  copy:
+    dest: /etc/dovecot/users
+    content: |
+      {{ thunderbird_username }}:{{ thunderbird_password | password_hash('SHA512') }}:1000:1000::/home/{{ thunderbird_username }}:/bin/false
+    owner: root
+    group: root
+    mode: '0600'
 
 - name: Restart Dovecot to apply changes
   service:
