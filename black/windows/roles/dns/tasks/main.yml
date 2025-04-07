@@ -9,11 +9,18 @@
   ansible.windows.win_reboot:
   when: dns_install.changed
 
+
+- name: Check if jurassicpark.local zone exists
+  community.windows.win_dns_zone_info:
+    name: jurassicpark.local
+  register: jurassic_zone_info
+  ignore_errors: yes
+
 - name: Create Forward Lookup Zone
   community.windows.win_dns_zone:
     name: jurassicpark.local
-    type: Primary
-  ignore_errors: yes
+    zone_type: Primary
+  when: jurassic_zone_info.failed
 
 - name: Create A record for Plesiosaurus1
   community.windows.win_dns_record:
@@ -31,15 +38,33 @@
     zone: jurassicpark.local
     state: present
 
+- name: Check if 1.0.10.in-addr.arpa zone exists
+  community.windows.win_dns_zone_info:
+    name: 1.0.10.in-addr.arpa
+  register: reverse_zone_info_1
+  ignore_errors: yes
+
 - name: Create Reverse Lookup Zone for 10.0.1.0/24
   community.windows.win_dns_zone:
     name: 1.0.10.in-addr.arpa
-    type: Primary
+    zone_type: Primary
+    dynamic_update: "None"
+    replication: "Domain"
+  when: reverse_zone_info_1.failed
     
+- name: Check if 2.0.10.in-addr.arpa reverse zone exists
+  community.windows.win_dns_zone_info:
+    name: 2.0.10.in-addr.arpa
+  register: reverse_zone_info_2
+  ignore_errors: yes
+
 - name: Create Reverse Lookup Zone for 10.0.2.0/24
   community.windows.win_dns_zone:
     name: 2.0.10.in-addr.arpa
-    type: Primary
+    zone_type: Primary
+    dynamic_update: "None"
+    replication: "Domain"
+  when: reverse_zone_info_2.failed
 
 - name: Create PTR record for Plesiosaurus1
   community.windows.win_dns_record:
