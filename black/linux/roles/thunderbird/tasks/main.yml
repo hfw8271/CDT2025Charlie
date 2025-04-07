@@ -1,57 +1,85 @@
 ---
-- name: Install and configure Postfix
+- name: Install and configure Dovecot
   hosts: all
   become: yes
   vars:
-    postfix_hostname: "{{ thunderbird_username }}.{{ email_domain }}"
-    postfix_domain: "{{ email_domain }}"
-    postfix_user: "{{ thunderbird_username }}"
-    postfix_password: "{{ thunderbird_password }}"
+    dovecot_hostname: "{{ thunderbird_username }}.{{ email_domain }}"
+    dovecot_domain: "{{ email_domain }}"
+    dovecot_user: "{{ thunderbird_username }}"
+    dovecot_password: "{{ thunderbird_password }}"
   tasks:
     - name: Update APT package index
       apt:
         update_cache: yes
 
-    - name: Install Postfix
+    - name: Install Dovecot
       apt:
-        name: postfix
+        name:
+          - dovecot-core
+          - dovecot-imapd
+          - dovecot-pop3d
         state: present
 
-    - name: Configure Postfix main.cf
+    - name: Configure Dovecot main configuration
       copy:
-        dest: /etc/postfix/main.cf
+        dest: /etc/dovecot/dovecot.conf
         content: |
-          # Basic Postfix configuration
-          myhostname = {{ postfix_hostname }}
-          mydomain = {{ postfix_domain }}
-          myorigin = $mydomain
-          inet_interfaces = all
-          mydestination = $myhostname, localhost.$mydomain, localhost
-          relayhost =
-          mailbox_size_limit = 0
-          recipient_delimiter = +
-          inet_protocols = all
-          home_mailbox = Maildir/
+          # Basic Dovecot configuration
+          protocols = imap pop3
+          mail_location = maildir:/home/{{ dovecot_user }}/Maildir
+          disable_plaintext_auth = no
+          auth_mechanisms = plain login
+          ssl = no
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Configure Dovecot authentication
+      copy:
+        dest: /etc/dovecot/conf.d/10-auth.conf
+        content: |
+          # Authentication configuration
+          disable_plaintext_auth = no
+          auth_mechanisms = plain login
+          passdb {
+            driver = pam
+          }
+          userdb {
+            driver = passwd
+          }
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Configure Dovecot mailbox location
+      copy:
+        dest: /etc/dovecot/conf.d/10-mail.conf
+        content: |
+          # Mailbox configuration
+          mail_location = maildir:/home/{{ dovecot_user }}/Maildir
+          namespace inbox {
+            inbox = yes
+          }
         owner: root
         group: root
         mode: '0644'
 
     - name: Create Maildir for the user
       file:
-        path: "/home/{{ postfix_user }}/Maildir"
+        path: "/home/{{ dovecot_user }}/Maildir"
         state: directory
-        owner: "{{ postfix_user }}"
-        group: "{{ postfix_user }}"
+        owner: "{{ dovecot_user }}"
+        group: "{{ dovecot_user }}"
         mode: '0700'
         recurse: yes
 
-    - name: Restart Postfix to apply changes
-      service:
-        name: postfix
-        state: restarted
-
     - name: Ensure user exists for email
       user:
-        name: "{{ postfix_user }}"
-        password: "{{ postfix_password | password_hash('sha512') }}"
+        name: "{{ dovecot_user }}"
+        password: "{{ dovecot_password | password_hash('sha512') }}"
         shell: /bin/false
+
+    - name: Restart Dovecot to apply changes
+      service:
+        name: dovecot
+        state: restarted
