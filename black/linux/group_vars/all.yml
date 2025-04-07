@@ -11,7 +11,7 @@ users:
 
 #freeipa
 dns_zones:
-  team01:
+  giganotosaurus1:
     server_ip: "10.0.1.1"
     zone_name: "jp1.local"
     hosts:
@@ -20,7 +20,7 @@ dns_zones:
       - { name: "stegosaurus1", ip: "192.168.1.109" }
       - { name: "triceratops1", ip: "192.168.1.12" }
       - { name: "allosaurus1", ip: "10.0.1.77" }
-  team02:
+  giganotosaurus2:
     server_ip: "10.0.2.1"
     zone_name: "jp2.local"
     hosts:
