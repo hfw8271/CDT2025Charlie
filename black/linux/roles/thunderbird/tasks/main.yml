@@ -50,7 +50,7 @@
       auth_mechanisms = plain login
       passdb {
         driver = pam
-        args = /etc/pam.d/dovecot
+        args = dovecot
       }
       userdb {
         driver = passwd
