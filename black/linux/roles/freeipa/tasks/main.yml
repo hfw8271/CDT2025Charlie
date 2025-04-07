@@ -11,3 +11,23 @@
   hostname:
     name: "{{ inventory_hostname }}"
   when: "'team02' in ansible_limit"
+
+- name: Set primary DNS server for team01
+  lineinfile:
+    path: /etc/resolv.conf
+    state: present
+    line: "nameserver 10.0.1.1"
+  when: "'team01' in ansible_limit"
+
+- name: Set primary DNS server for team02
+  lineinfile:
+    path: /etc/resolv.conf
+    state: present
+    line: "nameserver 10.0.2.1"
+  when: "'team02' in ansible_limit"
+
+- name: Set alternate DNS server for both teams
+  lineinfile:
+    path: /etc/resolv.conf
+    state: present
+    line: "nameserver 8.8.8.8"
