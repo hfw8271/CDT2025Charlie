@@ -79,11 +79,12 @@
     regexp: '^-XX:\+Use(ParNewGC|ConcMarkSweepGC)'
     state: absent
 
-- name: Ensure G1GC is set for Graylog
+- name: Ensure G1GC is set for Graylog in GRAYLOG_SERVER_JAVA_OPTS
   lineinfile:
     path: /etc/default/graylog-server
-    insertafter: EOF
-    line: '-XX:+UseG1GC'
+    regexp: '^GRAYLOG_SERVER_JAVA_OPTS='
+    line: 'GRAYLOG_SERVER_JAVA_OPTS="-XX:+UseG1GC"'
+    create: yes
 
 - name: Generate password secret
   command: pwgen -N 1 -s 96
