@@ -11,6 +11,22 @@
       - dovecot-pop3d
     state: present
 
+- name: Ensure user exists for email
+  user:
+    name: "{{ thunderbird_username }}"
+    password: "{{ thunderbird_password | password_hash('sha512') }}"
+    shell: /bin/false
+    state: present
+
+- name: Create Maildir for the user
+  file:
+    path: "/home/{{ thunderbird_username }}/Maildir"
+    state: directory
+    owner: "{{ thunderbird_username }}"
+    group: "{{ thunderbird_username }}"
+    mode: '0700'
+    recurse: yes
+
 - name: Configure Dovecot main configuration
   copy:
     dest: /etc/dovecot/dovecot.conf
@@ -55,22 +71,7 @@
     group: root
     mode: '0644'
 
-- name: Create Maildir for the user
-  file:
-    path: "/home/{{ thunderbird_username }}/Maildir"
-    state: directory
-    owner: "{{ thunderbird_username }}"
-    group: "{{ thunderbird_username }}"
-    mode: '0700'
-    recurse: yes
-
-- name: Ensure user exists for email
-  user:
-    name: "{{ thunderbird_username }}"
-    password: "{{ thunderbird_password | password_hash('sha512') }}"
-    shell: /bin/false
-
 - name: Restart Dovecot to apply changes
   service:
     name: dovecot
-    state: restartedx`
+    state: restarted
