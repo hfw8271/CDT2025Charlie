@@ -11,6 +11,10 @@
       - dovecot-pop3d
     state: present
 
+- name: Run the users role
+  include_role:
+    name: users
+
 - name: Ensure user exists for email
   user:
     name: "{{ thunderbird_username }}"
