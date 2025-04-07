@@ -50,6 +50,7 @@
       auth_mechanisms = plain login
       passdb {
         driver = pam
+        args = dovecot
       }
       userdb {
         driver = passwd
