@@ -8,6 +8,7 @@
     name:
       - dovecot-core
       - dovecot-imapd
+      - dovecot-pop3d
     state: present
 
 - name: Ensure user exists for email
@@ -31,7 +32,7 @@
     dest: /etc/dovecot/dovecot.conf
     content: |
       # Basic Dovecot configuration
-      protocols = imap
+      protocols = imap pop3
       mail_location = maildir:/home/{{ thunderbird_username }}/Maildir
       disable_plaintext_auth = no
       auth_mechanisms = plain login
