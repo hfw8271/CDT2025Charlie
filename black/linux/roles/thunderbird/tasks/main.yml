@@ -37,6 +37,20 @@
       disable_plaintext_auth = no
       auth_mechanisms = plain login
       ssl = no
+      
+      # Include auth config
+      !include conf.d/10-auth.conf
+      !include conf.d/10-mail.conf
+      
+      # Define passdb here as well to ensure it's loaded
+      passdb {
+        driver = passwd-file
+        args = /etc/dovecot/users
+      }
+      userdb {
+        driver = static
+        args = uid=vmail gid=vmail home=/home/%u/Maildir
+      }
     owner: root
     group: root
     mode: '0644'
@@ -91,6 +105,25 @@
     owner: root
     group: root
     mode: '0600'
+
+- name: Ensure proper permissions on dovecot users file
+  file:
+    path: /etc/dovecot/users
+    owner: root
+    group: dovecot
+    mode: '0640'
+
+- name: Create dovecot user's Maildir subdirectories
+  file:
+    path: "/home/{{ thunderbird_username }}/Maildir/{{ item }}"
+    state: directory
+    owner: "{{ thunderbird_username }}"
+    group: "{{ thunderbird_username }}"
+    mode: '0700'
+  with_items:
+    - 'new'
+    - 'cur'
+    - 'tmp'
 
 - name: Restart Dovecot to apply changes
   service:
