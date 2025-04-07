@@ -11,7 +11,7 @@
 
 
 - name: Check if jurassicpark.local zone exists
-  community.windows.win_dns_zone_info:
+  community.windows.win_dns_zone:
     name: jurassicpark.local
   register: jurassic_zone_info
   ignore_errors: yes
@@ -39,7 +39,7 @@
     state: present
 
 - name: Check if 1.0.10.in-addr.arpa zone exists
-  community.windows.win_dns_zone_info:
+  community.windows.win_dns_zone:
     name: 1.0.10.in-addr.arpa
   register: reverse_zone_info_1
   ignore_errors: yes
@@ -53,7 +53,7 @@
   when: reverse_zone_info_1.failed
     
 - name: Check if 2.0.10.in-addr.arpa reverse zone exists
-  community.windows.win_dns_zone_info:
+  community.windows.win_dns_zone:
     name: 2.0.10.in-addr.arpa
   register: reverse_zone_info_2
   ignore_errors: yes
