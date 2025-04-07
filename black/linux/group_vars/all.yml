@@ -28,7 +28,7 @@ dns_zones:
       - { name: "brachiosaurus2", ip: "192.168.2.89" }
       - { name: "stegosaurus2", ip: "192.168.2.109" }
       - { name: "triceratops2", ip: "192.168.2.12" }
-      - { name: "allosaurus2", ip: "10.0.2.77" 
+      - { name: "allosaurus2", ip: "10.0.2.77" }
 
 #mysql
 mysql_root_password: "blueprintOfLife54!"
