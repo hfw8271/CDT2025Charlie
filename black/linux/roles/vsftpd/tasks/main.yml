@@ -12,6 +12,18 @@
     group: root
     mode: '0644'
 
+- name: Ensure /home/scoring exists
+  ansible.builtin.file:
+    path: /home/scoring
+    owner: scoring
+    group: scoring
+    state: directory
+
+- name: Make scoring user home directory /home/scoring
+  ansible.builtin.user:
+    name: scoring
+    home: /home/scoring
+
 - name: Copy over scored file
   ansible.builtin.copy:
     src: dinoplans.txt
