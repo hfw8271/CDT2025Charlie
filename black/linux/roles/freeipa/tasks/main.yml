@@ -2,22 +2,12 @@
   hostname:
     name: "{% if 'team01' in ansible_limit %}giganotosaurus1.jp1.local{% elif 'team02' in ansible_limit %}giganotosaurus2.jp2.local{% else %}unknown.local{% endif %}"
 
-- name: Convert hostname to lowercase and set the hostname for team01
+- name: Set hostname for team01 machines
   hostname:
-    name: "{{ item | lower }}1.jp1.local"
+    name: "{{ inventory_hostname }}"
   when: "'team01' in ansible_limit"
-  loop:
-    - allosaurus
-    - brachiosaurus
-    - stegosaurus
-    - triceratops
 
-- name: Convert hostname to lowercase and set the hostname for team02
+- name: Set hostname for team02 machines
   hostname:
-    name: "{{ item | lower }}2.jp2.local"
+    name: "{{ inventory_hostname }}"
   when: "'team02' in ansible_limit"
-  loop:
-    - allosaurus
-    - brachiosaurus
-    - stegosaurus
-    - triceratops
