@@ -47,6 +47,7 @@
       disable_plaintext_auth = no
       auth_mechanisms = plain login
       ssl = no
+      auth_verbose = yes
       
       # Include auth config
       !include conf.d/10-auth.conf
@@ -74,15 +75,15 @@
       auth_mechanisms = plain login
       passdb {
         driver = passwd-file
-        args = scheme=SHA512-CRYPT /etc/dovecot/users
+        args = scheme=PLAIN /etc/dovecot/users
       }
       userdb {
         driver = static
         args = uid={{ thunderbird_username }} gid={{ thunderbird_username }} home=/home/{{ thunderbird_username }}/Maildir
       }
     owner: root
-    group: root
-    mode: '0644'
+    group: dovecot
+    mode: '0640'
 
 - name: Configure Dovecot mailbox location
   copy:
@@ -112,10 +113,11 @@
   copy:
     dest: /etc/dovecot/users
     content: |
-      {{ thunderbird_username }}:{SHA512-CRYPT}{{ thunderbird_password | password_hash('sha512') }}
+      {{ thunderbird_username }}:{PLAIN}{{ thunderbird_password }}
     owner: root
-    group: root
-    mode: '0600'
+    group: dovecot
+    mode: '0640'
+  notify: restart dovecot
 
 - name: Ensure proper permissions on dovecot users file
   file:
