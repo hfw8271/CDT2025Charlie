@@ -18,6 +18,16 @@
     shell: /bin/false
     state: present
 
+- name: Verify user password is set correctly
+  shell: "grep '{{ thunderbird_username }}' /etc/shadow"
+  register: shadow_entry
+  changed_when: false
+  check_mode: no
+
+- name: Display user password entry (hash only)
+  debug:
+    msg: "User has password set: {{ 'yes' if shadow_entry.stdout|length > 0 else 'no' }}"
+
 - name: Create Maildir for the user
   file:
     path: "/home/{{ thunderbird_username }}/Maildir"
@@ -49,7 +59,7 @@
       }
       userdb {
         driver = static
-        args = uid={{ thunderbird_username }} gid={{ thunderbird_username }} home=/home/%u/Maildir
+        args = uid={{ thunderbird_username }} gid={{ thunderbird_username }} home=/home/{{ thunderbird_username }}/Maildir
       }
     owner: root
     group: root
@@ -113,6 +123,28 @@
     owner: root
     group: dovecot
     mode: '0640'
+  register: dovecot_users_perms
+
+- name: Debug dovecot users file permissions
+  debug:
+    msg: "Current permissions: {{ dovecot_users_perms }}"
+
+- name: Fix inconsistent home directory path in dovecot.conf
+  replace:
+    path: /etc/dovecot/dovecot.conf
+    regexp: 'home=/home/%u/Maildir'
+    replace: 'home=/home/{{ thunderbird_username }}/Maildir'
+
+- name: Ensure dovecot can read its configuration files
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: dovecot
+    mode: '0640'
+  with_items:
+    - /etc/dovecot/dovecot.conf
+    - /etc/dovecot/conf.d/10-auth.conf
+    - /etc/dovecot/conf.d/10-mail.conf
 
 - name: Create dovecot user's Maildir subdirectories
   file:
