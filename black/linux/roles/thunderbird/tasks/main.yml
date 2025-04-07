@@ -75,7 +75,7 @@
       auth_mechanisms = plain login
       passdb {
         driver = passwd-file
-        args = /etc/dovecot/users
+        args = scheme=PLAIN /etc/dovecot/users
       }
       userdb {
         driver = static
@@ -118,6 +118,26 @@
     group: dovecot
     mode: '0640'
   notify: restart dovecot
+
+- name: Ensure Dovecot password file has correct credentials
+  copy:
+    dest: /etc/dovecot/users
+    content: "{{ thunderbird_username }}:{PLAIN}{{ thunderbird_password }}"
+    owner: root
+    group: dovecot
+    mode: '0640'
+  notify: restart dovecot
+
+- name: Verify credentials in password file
+  shell: "cat /etc/dovecot/users"
+  register: dovecot_users_content
+  changed_when: false
+  check_mode: no
+  no_log: true  # Don't log output with passwords
+
+- name: Validate credentials format (without showing password)
+  debug:
+    msg: "Credential format check: {{ 'OK' if thunderbird_username in dovecot_users_content.stdout else 'INVALID' }}"
 
 - name: Ensure proper permissions on dovecot users file
   file:
