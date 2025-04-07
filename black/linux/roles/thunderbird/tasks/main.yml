@@ -1,85 +1,76 @@
 ---
-- name: Install and configure Dovecot
-  hosts: all
-  become: yes
-  vars:
-    dovecot_hostname: "{{ thunderbird_username }}.{{ email_domain }}"
-    dovecot_domain: "{{ email_domain }}"
-    dovecot_user: "{{ thunderbird_username }}"
-    dovecot_password: "{{ thunderbird_password }}"
-  tasks:
-    - name: Update APT package index
-      apt:
-        update_cache: yes
+- name: Update APT package index
+  apt:
+    update_cache: yes
 
-    - name: Install Dovecot
-      apt:
-        name:
-          - dovecot-core
-          - dovecot-imapd
-          - dovecot-pop3d
-        state: present
+- name: Install Dovecot
+  apt:
+    name:
+      - dovecot-core
+      - dovecot-imapd
+      - dovecot-pop3d
+    state: present
 
-    - name: Configure Dovecot main configuration
-      copy:
-        dest: /etc/dovecot/dovecot.conf
-        content: |
-          # Basic Dovecot configuration
-          protocols = imap pop3
-          mail_location = maildir:/home/{{ dovecot_user }}/Maildir
-          disable_plaintext_auth = no
-          auth_mechanisms = plain login
-          ssl = no
-        owner: root
-        group: root
-        mode: '0644'
+- name: Configure Dovecot main configuration
+  copy:
+    dest: /etc/dovecot/dovecot.conf
+    content: |
+      # Basic Dovecot configuration
+      protocols = imap pop3
+      mail_location = maildir:/home/{{ dovecot_user }}/Maildir
+      disable_plaintext_auth = no
+      auth_mechanisms = plain login
+      ssl = no
+    owner: root
+    group: root
+    mode: '0644'
 
-    - name: Configure Dovecot authentication
-      copy:
-        dest: /etc/dovecot/conf.d/10-auth.conf
-        content: |
-          # Authentication configuration
-          disable_plaintext_auth = no
-          auth_mechanisms = plain login
-          passdb {
-            driver = pam
-          }
-          userdb {
-            driver = passwd
-          }
-        owner: root
-        group: root
-        mode: '0644'
+- name: Configure Dovecot authentication
+  copy:
+    dest: /etc/dovecot/conf.d/10-auth.conf
+    content: |
+      # Authentication configuration
+      disable_plaintext_auth = no
+      auth_mechanisms = plain login
+      passdb {
+        driver = pam
+      }
+      userdb {
+        driver = passwd
+      }
+    owner: root
+    group: root
+    mode: '0644'
 
-    - name: Configure Dovecot mailbox location
-      copy:
-        dest: /etc/dovecot/conf.d/10-mail.conf
-        content: |
-          # Mailbox configuration
-          mail_location = maildir:/home/{{ dovecot_user }}/Maildir
-          namespace inbox {
-            inbox = yes
-          }
-        owner: root
-        group: root
-        mode: '0644'
+- name: Configure Dovecot mailbox location
+  copy:
+    dest: /etc/dovecot/conf.d/10-mail.conf
+    content: |
+      # Mailbox configuration
+      mail_location = maildir:/home/{{ dovecot_user }}/Maildir
+      namespace inbox {
+        inbox = yes
+      }
+    owner: root
+    group: root
+    mode: '0644'
 
-    - name: Create Maildir for the user
-      file:
-        path: "/home/{{ dovecot_user }}/Maildir"
-        state: directory
-        owner: "{{ dovecot_user }}"
-        group: "{{ dovecot_user }}"
-        mode: '0700'
-        recurse: yes
+- name: Create Maildir for the user
+  file:
+    path: "/home/{{ dovecot_user }}/Maildir"
+    state: directory
+    owner: "{{ dovecot_user }}"
+    group: "{{ dovecot_user }}"
+    mode: '0700'
+    recurse: yes
 
-    - name: Ensure user exists for email
-      user:
-        name: "{{ dovecot_user }}"
-        password: "{{ dovecot_password | password_hash('sha512') }}"
-        shell: /bin/false
+- name: Ensure user exists for email
+  user:
+    name: "{{ dovecot_user }}"
+    password: "{{ dovecot_password | password_hash('sha512') }}"
+    shell: /bin/false
 
-    - name: Restart Dovecot to apply changes
-      service:
-        name: dovecot
-        state: restarted
+- name: Restart Dovecot to apply changes
+  service:
+    name: dovecot
+    state: restarted
