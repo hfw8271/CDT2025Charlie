@@ -113,11 +113,16 @@
   copy:
     dest: /etc/dovecot/users
     content: |
-      {{ thunderbird_username }}:{sha512}{{ thunderbird_password }}
+      {{ thunderbird_username }}:{PLAIN}{{ thunderbird_password }}
     owner: root
     group: dovecot
     mode: '0640'
-  notify: restart dovecot
+  register: dovecot_passwd_file
+  
+- name: Debug password file content (without showing actual password)
+  debug:
+    msg: "Password file created for user {{ thunderbird_username }} with PLAIN scheme"
+  when: dovecot_passwd_file.changed
 
 - name: Ensure proper permissions on dovecot users file
   file:
@@ -164,30 +169,4 @@
   service:
     name: dovecot
     state: restarted
-
-- name: Verify authentication configuration
-  lineinfile:
-    path: /etc/dovecot/conf.d/10-auth.conf
-    line: "      args = scheme=PLAIN /etc/dovecot/users"
-    regexp: ".*args = scheme=PLAIN.*"
-    state: present
-  check_mode: yes
-  register: auth_config_check
-  changed_when: false
-
-- name: Display authentication configuration status
-  debug:
-    msg: "Authentication configuration {{ 'appears correct' if not auth_config_check.would_be_changed else 'needs updating' }}"
-
-- name: Ensure password file is accessible and correctly formatted
-  shell: "grep -v '^#' /etc/dovecot/users | wc -l"
-  register: passwd_file_check
-  changed_when: false
-  check_mode: no
-
-- name: Restart Dovecot after configuration changes
-  service:
-    name: dovecot
-    state: restarted
-  when: dovecot_passwd_file.changed or dovecot_users_perms.changed
 
