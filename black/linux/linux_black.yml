@@ -59,3 +59,13 @@
     - never
     - deploy
     - mysql
+
+- name: rsyslog
+  hosts: all
+  become: yes
+  roles:
+    - rsyslog
+  tags:
+    - never
+    - deploy
+    - rsyslog

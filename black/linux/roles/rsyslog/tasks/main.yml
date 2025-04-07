@@ -1,0 +1,28 @@
+---
+- name: Set remote log forwarding IP based on subnet
+  set_fact:
+    log_forward_ip: >-
+      {% if ansible_default_ipv4.address.startswith('10.0.1.') %}
+        10.0.1.221
+      {% elif ansible_default_ipv4.address.startswith('10.0.2.') %}
+        10.0.2.221
+      {% elif ansible_default_ipv4.address.startswith('192.168.1.') %}
+        192.168.1.221
+      {% elif ansible_default_ipv4.address.startswith('192.168.2.') %}
+        192.168.2.221
+      {% else %}
+        127.0.0.1
+      {% endif %}
+
+- name: Copy over rsyslog config to targets
+  ansible.builtin.template:
+    src: 50-default.j2
+    dest: /etc/rsyslog.d/50-default.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart rsyslog
+
+- name: Verify functionality
+  ansible.builtin.command: logger 'test from "{{ ansible_default_ipv4.address }}"'
+  ignore_errors: true
