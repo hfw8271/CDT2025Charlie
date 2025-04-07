@@ -87,6 +87,7 @@
     owner: root
     group: dovecot
     mode: '0640'
+    force: yes
 
 - name: Ensure proper permissions on Dovecot configuration files
   file:
