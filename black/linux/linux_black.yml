@@ -21,7 +21,7 @@
     - thunderbird
 
 - name: freeipa
-  hosts: all
+  hosts: freeipa
   become: yes
   roles:
     - freeipa
@@ -29,6 +29,16 @@
     - never
     - deploy
     - freeipa
+
+- name: freeipa_all
+  hosts: all
+  become: yes
+  roles:
+    - freeipa_all
+  tags: 
+    - never
+    - deploy
+    - freeipa_all
 
 - name: nginx
   hosts: nginx
