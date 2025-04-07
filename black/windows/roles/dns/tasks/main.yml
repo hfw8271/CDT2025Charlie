@@ -13,6 +13,7 @@
   community.windows.win_dns_zone:
     name: jurassicpark.local
     type: Primary
+  ignore_errors: yes
 
 - name: Create A record for Plesiosaurus1
   community.windows.win_dns_record:
@@ -38,8 +39,7 @@
 - name: Create Reverse Lookup Zone for 10.0.2.0/24
   community.windows.win_dns_zone:
     name: 2.0.10.in-addr.arpa
-    zone_type: Primary
-    replication_scope: Forest
+    type: Primary
 
 - name: Create PTR record for Plesiosaurus1
   community.windows.win_dns_record:
