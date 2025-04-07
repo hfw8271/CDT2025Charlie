@@ -17,20 +17,20 @@
   ignore_errors: yes
 
 # --- A Records ---
-- name: Create A record for Plesiosaurus1
+- name: Create A record for tyrannosaurus1
   community.windows.win_dns_record:
-    name: plesiosaurus1
+    name: tyrannosaurus1
     type: A
-    value: 10.0.1.43
+    value: 10.0.1.9
     zone: jurassicpark.local
     state: present
   ignore_errors: yes
 
-- name: Create A record for Plesiosaurus2
+- name: Create A record for tyrannosaurus2
   community.windows.win_dns_record:
-    name: plesiosaurus2
+    name: tyrannosaurus2
     type: A
-    value: 10.0.2.43
+    value: 10.0.2.9
     zone: jurassicpark.local
     state: present
   ignore_errors: yes
@@ -49,20 +49,21 @@
   ignore_errors: yes
 
 # --- PTR Records ---
-- name: Create PTR record for Plesiosaurus1
+- name: Create PTR record for tyrannosaurus1
   community.windows.win_dns_record:
     name: 43
     type: PTR
-    value: plesiosaurus1.jurassicpark.local
+    value: tyrannosaurus1.jurassicpark.local
     zone: 1.0.10.in-addr.arpa
     state: present
   ignore_errors: yes
 
-- name: Create PTR record for Plesiosaurus2
+- name: Create PTR record for tyrannosaurus2
   community.windows.win_dns_record:
     name: 43
     type: PTR
-    value: plesiosaurus2.jurassicpark.local
+    value: tyrannosaurus2.jurassicpark.local
     zone: 2.0.10.in-addr.arpa
     state: present
   ignore_errors: yes
+
