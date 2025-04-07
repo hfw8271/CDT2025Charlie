@@ -27,23 +27,23 @@
     state: present
   loop: "{{ jurassic_users }}"
   
-# - name: Ensure "Users" OU exists
-#   microsoft.ad.ou:
-#     name: Users
-#     path: DC=jurassicpark,DC=local
-#     state: present
+- name: Ensure "Users" OU exists
+  microsoft.ad.ou:
+    name: Users
+    path: DC=jurassicpark,DC=local
+    state: present
+  ignore_errors: yes
 
 - name: Create Domain Admin users
   microsoft.ad.user:
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     state: present
-    path: "OU=Users,DC=jurassicpark,DC=local"
+    path: "CN=Users,DC=jurassicpark,DC=local"
     enabled: yes
     groups:
       set:
-        - Domain Admins
-        - Domain Users
+        - "Domain Admins"
   loop: "{{ jurassic_users }}"
   when: item.admin
 
@@ -52,10 +52,10 @@
     name: "{{ item.name }}"
     password: "{{ item.password }}"
     state: present
-    path: "OU=Users,DC=jurassicpark,DC=local"
+    path: "CN=Users,DC=jurassicpark,DC=local"
     enabled: yes
     groups:
       set:
-        - Domain Users
+        - "Domain Admins"
   loop: "{{ jurassic_users }}"
   when: not item.admin
