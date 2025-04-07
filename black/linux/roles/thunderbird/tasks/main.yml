@@ -75,7 +75,7 @@
       auth_mechanisms = plain login
       passdb {
         driver = passwd-file
-        args = scheme=PLAIN /etc/dovecot/users
+        args = /etc/dovecot/users
       }
       userdb {
         driver = static
