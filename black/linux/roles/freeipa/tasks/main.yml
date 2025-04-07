@@ -31,3 +31,29 @@
     path: /etc/resolv.conf
     state: present
     line: "nameserver 8.8.8.8"
+
+- name: Configure /etc/hosts file for team01
+  lineinfile:
+    path: /etc/hosts
+    state: present
+    line: "{{ item }}"
+  when: "'team01' in ansible_limit"
+  loop:
+    - "10.0.1.1 giganotosaurus1.jp1.local"
+    - "192.168.1.89 brachiosaurus1.jp1.local"
+    - "192.168.1.109 stegosaurus1.jp1.local"
+    - "192.168.1.12 triceratops1.jp1.local"
+    - "10.0.1.77 allosaurus1.jp1.local"
+
+- name: Configure /etc/hosts file for team02
+  lineinfile:
+    path: /etc/hosts
+    state: present
+    line: "{{ item }}"
+  when: "'team02' in ansible_limit"
+  loop:
+    - "10.0.2.1 giganotosaurus2.jp2.local"
+    - "192.168.2.89 brachiosaurus2.jp2.local"
+    - "192.168.2.109 stegosaurus2.jp2.local"
+    - "192.168.2.12 triceratops2.jp2.local"
+    - 
