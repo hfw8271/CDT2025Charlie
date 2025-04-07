@@ -1,4 +1,9 @@
 ---
+- name: Make sure rsyslog is installed
+  ansible.builtin.package:
+    name: rsyslog
+    state: present
+
 - name: Set remote log forwarding IP based on subnet
   set_fact:
     log_forward_ip: >-
