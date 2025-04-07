@@ -1,123 +1,123 @@
 ---
-# - name: Update APT package index
-#   apt:
-#     update_cache: yes
+- name: Update APT package index
+  apt:
+    update_cache: yes
 
-# - name: Install Dovecot and required packages
-#   apt:
-#     name:
-#       - dovecot-core
-#       - dovecot-imapd
-#       - dovecot-pop3d
-#     state: present
+- name: Install Dovecot and required packages
+  apt:
+    name:
+      - dovecot-core
+      - dovecot-imapd
+      - dovecot-pop3d
+    state: present
 
 - name: Run the users role
   include_role:
     name: users
 
-# - name: Ensure user exists for email
-#   user:
-#     name: "{{ thunderbird_username }}"
-#     password: "{{ thunderbird_password | password_hash('sha256_crypt') }}"
-#     shell: /bin/false
-#     state: present
+- name: Ensure user exists for email
+  user:
+    name: "{{ thunderbird_username }}"
+    password: "{{ thunderbird_password | password_hash('sha256_crypt') }}"
+    shell: /bin/false
+    state: present
 
-# - name: Create Maildir for the user
-#   file:
-#     path: "/home/{{ thunderbird_username }}/Maildir"
-#     state: directory
-#     owner: "{{ thunderbird_username }}"
-#     group: "{{ thunderbird_username }}"
-#     mode: '0700'
-#     recurse: yes
+- name: Create Maildir for the user
+  file:
+    path: "/home/{{ thunderbird_username }}/Maildir"
+    state: directory
+    owner: "{{ thunderbird_username }}"
+    group: "{{ thunderbird_username }}"
+    mode: '0700'
+    recurse: yes
 
-# - name: Configure Dovecot main configuration
-#   copy:
-#     dest: /etc/dovecot/dovecot.conf
-#     content: |
-#       protocols = imap pop3
-#       mail_location = maildir:/home/{{ thunderbird_username }}/Maildir
-#       disable_plaintext_auth = no
-#       auth_mechanisms = plain login
-#       ssl = no
-#       auth_verbose = yes
-#       passdb {
-#         driver = passwd-file
-#         args = /etc/dovecot/users
-#       }
-#       userdb {
-#         driver = static
-#         args = uid={{ thunderbird_username }} gid={{ thunderbird_username }} home=/home/{{ thunderbird_username }}/Maildir
-#       }
-#     owner: root
-#     group: root
-#     mode: '0644'
+- name: Configure Dovecot main configuration
+  copy:
+    dest: /etc/dovecot/dovecot.conf
+    content: |
+      protocols = imap pop3
+      mail_location = maildir:/home/{{ thunderbird_username }}/Maildir
+      disable_plaintext_auth = no
+      auth_mechanisms = plain login
+      ssl = no
+      auth_verbose = yes
+      passdb {
+        driver = passwd-file
+        args = /etc/dovecot/users
+      }
+      userdb {
+        driver = static
+        args = uid={{ thunderbird_username }} gid={{ thunderbird_username }} home=/home/{{ thunderbird_username }}/Maildir
+      }
+    owner: root
+    group: root
+    mode: '0644'
 
-# - name: Configure Dovecot authentication
-#   copy:
-#     dest: /etc/dovecot/conf.d/10-auth.conf
-#     content: |
-#       disable_plaintext_auth = no
-#       auth_mechanisms = plain login
-#       passdb {
-#         driver = passwd-file
-#         args = scheme=PLAIN /etc/dovecot/users
-#       }
-#       userdb {
-#         driver = static
-#         args = uid={{ thunderbird_username }} gid={{ thunderbird_username }} home=/home/{{ thunderbird_username }}/Maildir
-#       }
-#     owner: root
-#     group: dovecot
-#     mode: '0640'
+- name: Configure Dovecot authentication
+  copy:
+    dest: /etc/dovecot/conf.d/10-auth.conf
+    content: |
+      disable_plaintext_auth = no
+      auth_mechanisms = plain login
+      passdb {
+        driver = passwd-file
+        args = scheme=PLAIN /etc/dovecot/users
+      }
+      userdb {
+        driver = static
+        args = uid={{ thunderbird_username }} gid={{ thunderbird_username }} home=/home/{{ thunderbird_username }}/Maildir
+      }
+    owner: root
+    group: dovecot
+    mode: '0640'
 
-# - name: Configure Dovecot mailbox location
-#   copy:
-#     dest: /etc/dovecot/conf.d/10-mail.conf
-#     content: |
-#       mail_location = maildir:/home/{{ thunderbird_username }}/Maildir
-#       namespace inbox {
-#         inbox = yes
-#       }
-#     owner: root
-#     group: root
-#     mode: '0644'
+- name: Configure Dovecot mailbox location
+  copy:
+    dest: /etc/dovecot/conf.d/10-mail.conf
+    content: |
+      mail_location = maildir:/home/{{ thunderbird_username }}/Maildir
+      namespace inbox {
+        inbox = yes
+      }
+    owner: root
+    group: root
+    mode: '0644'
 
-# - name: Create Dovecot passwd-file
-#   copy:
-#     dest: /etc/dovecot/users
-#     content: |
-#       {{ thunderbird_username }}:{PLAIN}{{ thunderbird_password }}
-#     owner: root
-#     group: dovecot
-#     mode: '0640'
-#     force: yes
+- name: Create Dovecot passwd-file
+  copy:
+    dest: /etc/dovecot/users
+    content: |
+      {{ thunderbird_username }}:{PLAIN}{{ thunderbird_password }}
+    owner: root
+    group: dovecot
+    mode: '0640'
+    force: yes
 
-# - name: Ensure proper permissions on Dovecot configuration files
-#   file:
-#     path: "{{ item }}"
-#     owner: root
-#     group: dovecot
-#     mode: '0640'
-#   with_items:
-#     - /etc/dovecot/dovecot.conf
-#     - /etc/dovecot/conf.d/10-auth.conf
-#     - /etc/dovecot/conf.d/10-mail.conf
-#     - /etc/dovecot/users
+- name: Ensure proper permissions on Dovecot configuration files
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: dovecot
+    mode: '0640'
+  with_items:
+    - /etc/dovecot/dovecot.conf
+    - /etc/dovecot/conf.d/10-auth.conf
+    - /etc/dovecot/conf.d/10-mail.conf
+    - /etc/dovecot/users
 
-# - name: Create Maildir subdirectories
-#   file:
-#     path: "/home/{{ thunderbird_username }}/Maildir/{{ item }}"
-#     state: directory
-#     owner: "{{ thunderbird_username }}"
-#     group: "{{ thunderbird_username }}"
-#     mode: '0700'
-#   with_items:
-#     - 'new'
-#     - 'cur'
-#     - 'tmp'
+- name: Create Maildir subdirectories
+  file:
+    path: "/home/{{ thunderbird_username }}/Maildir/{{ item }}"
+    state: directory
+    owner: "{{ thunderbird_username }}"
+    group: "{{ thunderbird_username }}"
+    mode: '0700'
+  with_items:
+    - 'new'
+    - 'cur'
+    - 'tmp'
 
-# - name: Restart Dovecot to apply changes
-#   service:
-#     name: dovecot
-#     state: restarted
+- name: Restart Dovecot to apply changes
+  service:
+    name: dovecot
+    state: restarted
