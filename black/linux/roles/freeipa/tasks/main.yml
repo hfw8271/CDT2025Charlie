@@ -1,14 +1,3 @@
-- name: Set the hostname based on the team
-  hostname:
-    name: >-
-      {% if 'team01' in ansible_limit %}
-        giganotosaurus1.jp1.local
-      {% elif 'team02' in ansible_limit %}
-        giganotosaurus2.jp2.local
-      {% else %}
-        unknown.local
-      {% endif %}
-
 - name: Set the hostname for team01 machines
   hostname:
     name: "{{ inventory_hostname }}"
