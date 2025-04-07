@@ -73,6 +73,18 @@
     update_cache: yes
     state: present
 
+- name: Remove deprecated Java GC options
+  lineinfile:
+    path: /etc/default/graylog-server
+    regexp: '^-XX:\+Use(ParNewGC|ConcMarkSweepGC)'
+    state: absent
+
+- name: Ensure G1GC is set for Graylog
+  lineinfile:
+    path: /etc/default/graylog-server
+    insertafter: EOF
+    line: '-XX:+UseG1GC'
+
 - name: Generate password secret
   command: pwgen -N 1 -s 96
   register: password_secret
