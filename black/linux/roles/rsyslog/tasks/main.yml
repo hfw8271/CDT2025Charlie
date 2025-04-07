@@ -28,6 +28,16 @@
     mode: '0644'
   notify: restart rsyslog
 
+- name: See if this has been executed before
+  shell: grep -c "^PROMPT_COMMAND" /etc/bashrc || true
+  register: test_prompt_cmd
+
+- name: Add PROMPT_COMMAND to global /etc/bashrc
+  ansible.builtin.lineinfile:
+    dest: /etc/bashrc
+    line: "export PROMPT_COMMAND='RETRN_VAL=$?;logger -p local6.debug \"$(whoami) [$$]: $(history 1 | sed \"s/^[ ]*[0-9]\\+[ ]*//\" ) [$RETRN_VAL]\"'"
+  when: test_prompt_cmd.stdout == "0"
+
 - name: Verify functionality
   ansible.builtin.command: logger 'test from "{{ ansible_default_ipv4.address }}"'
   ignore_errors: true

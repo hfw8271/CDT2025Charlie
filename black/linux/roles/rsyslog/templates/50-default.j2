@@ -4,6 +4,9 @@
 
 *.* @@{{ log_forward_ip | trim }}
 
+# Custom log all commands
+local6.*    /var/log/commands.log
+
 #
 # First some standard log files.  Log by facility.
 #
