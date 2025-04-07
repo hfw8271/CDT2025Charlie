@@ -1,0 +1,55 @@
+---
+- name: Make sure rsyslog is installed
+  ansible.builtin.package:
+    name: rsyslog
+    state: present
+
+- name: Set remote log forwarding IP based on subnet
+  set_fact:
+    log_forward_ip: >-
+      {% if ansible_default_ipv4.address.startswith('10.0.1.') %}
+        10.0.1.251
+      {% elif ansible_default_ipv4.address.startswith('10.0.2.') %}
+        10.0.2.251
+      {% elif ansible_default_ipv4.address.startswith('192.168.1.') %}
+        192.168.1.251
+      {% elif ansible_default_ipv4.address.startswith('192.168.2.') %}
+        192.168.2.251
+      {% else %}
+        0.0.0.0:514
+      {% endif %}
+
+- name: Copy over rsyslog config to targets
+  ansible.builtin.template:
+    src: 50-default.j2
+    dest: /etc/rsyslog.d/50-default.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart rsyslog
+
+- name: See if this has been executed before (non debian)
+  shell: grep -c "^PROMPT_COMMAND" /etc/bashrc || true
+  register: test_prompt_cmd
+
+- name: See if this has been executed before (debian/ubuntu)
+  shell: grep -c "^PROMPT_COMMAND" /etc/bash.bashrc || true
+  register: test_prompt_cmd_alt
+
+- debug: msg="{{test_prompt_cmd.stdout}}"
+
+- name: Add PROMPT_COMMAND to global /etc/bashrc
+  ansible.builtin.lineinfile:
+    dest: /etc/bashrc
+    line: "export PROMPT_COMMAND='RETRN_VAL=$?;logger -p local6.debug \"$(whoami) [$$]: $(history 1 | sed \"s/^[ ]*[0-9]\\+[ ]*//\" ) [$RETRN_VAL]\"'"
+  when: test_prompt_cmd.stdout == "0"
+
+- name: Add PROMPT_COMMAND to global /etc/bash.bashrc
+  ansible.builtin.lineinfile:
+    dest: /etc/bash.bashrc
+    line: "export PROMPT_COMMAND='RETRN_VAL=$?;logger -p local6.debug \"$(whoami) [$$]: $(history 1 | sed \"s/^[ ]*[0-9]\\+[ ]*//\" ) [$RETRN_VAL]\"'"
+  when: test_prompt_cmd_alt.stdout == "0"
+
+- name: Verify functionality
+  ansible.builtin.command: logger 'test from "{{ ansible_default_ipv4.address }}"'
+  ignore_errors: true

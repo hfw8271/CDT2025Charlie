@@ -9,6 +9,26 @@ users:
   ellie_sattler: dinosaurDroppings72!
   alan_grant: itsADinosaur68!
 
+#freeipa
+dns_zones:
+  "10.0.1.1":
+    server_ip: "10.0.1.1"
+    zone_name: "jp1.local"
+    hosts:
+      - { name: "giganotosaurus1", ip: "10.0.1.1" }
+      - { name: "brachiosaurus1", ip: "192.168.1.89" }
+      - { name: "stegosaurus1", ip: "192.168.1.109" }
+      - { name: "triceratops1", ip: "192.168.1.12" }
+      - { name: "allosaurus1", ip: "10.0.1.77" }
+  "10.0.2.1":
+    server_ip: "10.0.2.1"
+    zone_name: "jp2.local"
+    hosts:
+      - { name: "giganotosaurus2", ip: "10.0.2.1" }
+      - { name: "brachiosaurus2", ip: "192.168.2.89" }
+      - { name: "stegosaurus2", ip: "192.168.2.109" }
+      - { name: "triceratops2", ip: "192.168.2.12" }
+      - { name: "allosaurus2", ip: "10.0.2.77" }
 
 #mysql
 mysql_root_password: "blueprintOfLife54!"

@@ -1,0 +1,38 @@
+---
+- name: Make sure VSFTPD is installed
+  ansible.builtin.package:
+    name: vsftpd
+    state: present
+
+- name: Copy over configuration file
+  ansible.builtin.copy:
+    src: vsftpd.conf
+    dest: /etc/vsftpd.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Ensure /home/scoring exists
+  ansible.builtin.file:
+    path: /home/scoring
+    owner: scoring
+    group: scoring
+    state: directory
+
+- name: Make scoring user home directory /home/scoring
+  ansible.builtin.user:
+    name: scoring
+    home: /home/scoring
+
+- name: Copy over scored file
+  ansible.builtin.copy:
+    src: dinoplans.txt
+    dest: /home/scoring/dinoplans.txt
+    owner: scoring
+    group: scoring 
+    mode: '0644'
+
+- name: Restart VSFTPD
+  service:
+    name: vsftpd
+    state: restarted
