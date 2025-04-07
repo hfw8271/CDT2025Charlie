@@ -26,6 +26,12 @@
     password: "{{ item.password }}"
     state: present
   loop: "{{ jurassic_users }}"
+  
+- name: Ensure "Users" OU exists
+  microsoft.ad.ou:
+    name: Users
+    path: DC=jurassicpark,DC=local
+    state: present
 
 - name: Create Domain Admin users
   microsoft.ad.user:
