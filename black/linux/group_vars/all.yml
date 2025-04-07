@@ -21,3 +21,5 @@ thunderbird_password: "jhamm123"
 
 #graylog
 graylog_password: "graylog" 
+graylog_version: 5.0
+gl_memory: 1024
