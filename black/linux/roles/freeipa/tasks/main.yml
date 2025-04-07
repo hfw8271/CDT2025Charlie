@@ -11,7 +11,7 @@
     dest: /etc/named.conf
     content: |
       options {
-          listen-on port 53 { 127.0.0.1; {{ dns_zones[inventory_hostname]['server_ip'] }}; };
+          listen-on port 53 { 127.0.0.1; };
           listen-on-v6 port 53 { ::1; };
           directory "/var/named";
           dump-file "/var/named/data/cache_dump.db";
@@ -19,7 +19,7 @@
           memstatistics-file "/var/named/data/named_mem_stats.txt";
           allow-query { any; };
           recursion no;
-          max-cache-size 512M;
+          max-cache-size 256M;
       };
       zone "{{ dns_zones[inventory_hostname]['zone_name'] }}" IN {
           type master;
