@@ -40,15 +40,15 @@
     - deploy
     - nginx
 
-- name: graylog
-  hosts: graylog
+- name: vsftpd
+  hosts: vsftpd
   become: yes
   roles:
-    - graylog
+    - vsftpd
   tags: 
     - never
     - deploy
-    - graylog
+    - vsftpd
 
 - name: mysql
   hosts: mysql
