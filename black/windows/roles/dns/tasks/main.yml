@@ -9,18 +9,25 @@
   ansible.windows.win_reboot:
   when: dns_install.changed
 
+# ---------------- Forward Zone ----------------
 
 - name: Check if jurassicpark.local zone exists
   community.windows.win_dns_zone:
     name: jurassicpark.local
-  register: jurassic_zone_info
-  ignore_errors: yes
+    state: query
+  register: forward_zone_info
+  ignore_errors: true
 
-- name: Create Forward Lookup Zone
+- name: Create Forward Lookup Zone if missing
   community.windows.win_dns_zone:
     name: jurassicpark.local
-    zone_type: Primary
-  when: jurassic_zone_info.failed
+    type: primary
+    dynamic_update: none
+    replication: domain
+    state: present
+  when: forward_zone_info.failed
+
+# ---------------- A Records ----------------
 
 - name: Create A record for Plesiosaurus1
   community.windows.win_dns_record:
@@ -38,33 +45,43 @@
     zone: jurassicpark.local
     state: present
 
-- name: Check if 1.0.10.in-addr.arpa zone exists
+# ---------------- Reverse Zone for 10.0.1.0/24 ----------------
+
+- name: Check if reverse zone 1.0.10.in-addr.arpa exists
   community.windows.win_dns_zone:
     name: 1.0.10.in-addr.arpa
+    state: query
   register: reverse_zone_info_1
-  ignore_errors: yes
+  ignore_errors: true
 
-- name: Create Reverse Lookup Zone for 10.0.1.0/24
+- name: Create Reverse Lookup Zone for 10.0.1.0/24 if missing
   community.windows.win_dns_zone:
     name: 1.0.10.in-addr.arpa
-    zone_type: Primary
-    dynamic_update: "None"
-    replication: "Domain"
+    type: primary
+    dynamic_update: none
+    replication: domain
+    state: present
   when: reverse_zone_info_1.failed
-    
-- name: Check if 2.0.10.in-addr.arpa reverse zone exists
-  community.windows.win_dns_zone:
-    name: 2.0.10.in-addr.arpa
-  register: reverse_zone_info_2
-  ignore_errors: yes
 
-- name: Create Reverse Lookup Zone for 10.0.2.0/24
+# ---------------- Reverse Zone for 10.0.2.0/24 ----------------
+
+- name: Check if reverse zone 2.0.10.in-addr.arpa exists
   community.windows.win_dns_zone:
     name: 2.0.10.in-addr.arpa
-    zone_type: Primary
-    dynamic_update: "None"
-    replication: "Domain"
+    state: query
+  register: reverse_zone_info_2
+  ignore_errors: true
+
+- name: Create Reverse Lookup Zone for 10.0.2.0/24 if missing
+  community.windows.win_dns_zone:
+    name: 2.0.10.in-addr.arpa
+    type: primary
+    dynamic_update: none
+    replication: domain
+    state: present
   when: reverse_zone_info_2.failed
+
+# ---------------- PTR Records ----------------
 
 - name: Create PTR record for Plesiosaurus1
   community.windows.win_dns_record:
