@@ -38,12 +38,12 @@
     - "192.168.1.12 Triceratops1"
     - "10.0.1.77 Allosaurus1"
 
-- name: Configure /etc/hosts file for team01
+- name: Configure /etc/hosts file for team02
   lineinfile:
     path: /etc/hosts
     state: present
     line: "{{ item }}"
-  when: "'team01' in ansible_limit"
+  when: "'team02' in ansible_limit"
   loop:
     - "10.0.1.1 Gigantosaurus2"
     - "192.168.1.89 Brachiosaurus2"
