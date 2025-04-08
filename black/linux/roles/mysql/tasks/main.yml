@@ -125,6 +125,76 @@
       (2, 'Humans');
     login_unix_socket: /var/run/mysqld/mysqld.sock
 
+- name: Create Dinosaurs Table
+  mysql_query:
+    login_db: "Tyrannosaurus_Rex"
+    query: |
+      CREATE TABLE IF NOT EXISTS dinosaurs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        genome VARCHAR(5) NOT NULL
+      );
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  ignore_errors: yes
+
+- name: Insert Dinosaur Data
+  mysql_query:
+    login_db: "Tyrannosaurus_Rex"
+    query: |
+      INSERT INTO dinosaurs (name, genome) VALUES
+      ('Tyrannosaurus Rex', 'AGCTA'),
+      ('Velociraptor', 'GCTAG'),
+      ('Triceratops', 'TGCAG'),
+      ('Stegosaurus', 'ACTGA'),
+      ('Brachiosaurus', 'GATCG'),
+      ('Ankylosaurus', 'CGTAC'),
+      ('Spinosaurus', 'AGTCC'),
+      ('Allosaurus', 'TGACA'),
+      ('Dilophosaurus', 'CAGTA'),
+      ('Carnotaurus', 'GACTA'),
+      ('Pachycephalosaurus', 'CTAGG'),
+      ('Parasaurolophus', 'TACGC'),
+      ('Iguanodon', 'GTCAG'),
+      ('Compsognathus', 'ACGTA'),
+      ('Therizinosaurus', 'GACTG'),
+      ('Sauropelta', 'CTGAC'),
+      ('Gallimimus', 'TAGGC'),
+      ('Mamenchisaurus', 'GTGAC'),
+      ('Corythosaurus', 'ACGTC'),
+      ('Albertosaurus', 'CGTAG'),
+      ('Microraptor', 'TGACC'),
+      ('Ouranosaurus', 'ACTCG'),
+      ('Mononykus', 'GACGT'),
+      ('Edmontosaurus', 'CGATG'),
+      ('Oviraptor', 'TACAG'),
+      ('Majungasaurus', 'GTCGA'),
+      ('Archaeopteryx', 'ACGTG'),
+      ('Troodon', 'GATGC'),
+      ('Styracosaurus', 'CAGTC'),
+      ('Theropoda', 'TGACG'),
+      ('Hadrosaurus', 'ACTGC'),
+      ('Eoraptor', 'GACTC'),
+      ('Kentrosaurus', 'CTGCA'),
+      ('Nodosaurus', 'TAGCC'),
+      ('Dryosaurus', 'GTACG'),
+      ('Megalosaurus', 'ACGCT'),
+      ('Ceratosaurus', 'CGTGA'),
+      ('Herrerasaurus', 'TGCAA'),
+      ('Plateosaurus', 'ACTCC'),
+      ('Ornithomimus', 'GACCT'),
+      ('Massospondylus', 'CGTCA'),
+      ('Protoceratops', 'TACGT'),
+      ('Saltasaurus', 'GTCGC'),
+      ('Mapusaurus', 'ACGTG'),
+      ('Rugops', 'GATCC'),
+      ('Gasosaurus', 'CAGCT'),
+      ('Scelidosaurus', 'TGAGC'),
+      ('Rhabdodon', 'ACTTC'),
+      ('Zalmoxes', 'GACTT');
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  ignore_errors: yes
+
+
 - name: Restart a service using the service module
   service:
     name: mysql
