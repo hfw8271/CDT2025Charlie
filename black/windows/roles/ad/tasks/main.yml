@@ -63,7 +63,8 @@
 - name: Update favorite color for mr_dna
   microsoft.ad.user:
     identity: mr_dna
-    attributes:
+    set:
       description: "Favorite Color: green"
     state: present
+
 
