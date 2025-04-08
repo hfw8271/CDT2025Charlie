@@ -60,7 +60,7 @@
   loop: "{{ jurassic_users }}"
   when: not item.admin
 
-- name: Update mr_dna's description to Favorite Color: green
+- name: Update mr_dna's description to Favorite Color green
   microsoft.ad.user:
     identity: mr_dna
     description: "Favorite Color: green"
